@@ -1,0 +1,136 @@
+version: 2
+
+# Re-usable blocks to reduce boilerplate in job definitions.
+references:
+  default_machine_job: &default_machine_job
+    machine: true
+    working_directory: ~/workdir
+
+  set_version_env_variable: &set_version_env_variable
+    run:
+      name: Define Environment Variable VERSION_NUMBER and ENV at Runtime
+      command: |
+        echo export VERSION_NUMBER=$(cat ~/workdir/.version) >> $BASH_ENV
+        source $BASH_ENV
+        echo $VERSION_NUMBER
+
+jobs:
+  checkout:
+    <<: *default_machine_job
+    steps:
+      - checkout
+      - run:
+          name: Get version
+          command: |
+            export VERSION_NUMBER=$(make get-next-version-number)
+            echo $VERSION_NUMBER >> ~/workdir/.version
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - workdir/.git
+            - workdir/.version
+            - workdir/Makefile
+            - workdir/Dockerfile
+            - workdir/get_next_version_date.sh
+  build:
+    <<: *default_machine_job
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *set_version_env_variable
+      - run:
+          name: Build Docker image
+          command: make build
+      - run:
+          name: Save docker to file
+          command: |
+            docker save --output docker-image.tar codacy/$CIRCLE_PROJECT_REPONAME:$VERSION_NUMBER
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - workdir/docker-image.tar
+
+  publish_versioned:
+    <<: *default_machine_job
+    environment:
+      PROJECT_NAME: ${CIRCLE_PROJECT_REPONAME}
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *set_version_env_variable
+      - run:
+          name: Load docker from file
+          command: docker load --input docker-image.tar
+      - run:
+          name: Publish images to Docker Hub
+          command: make push-docker-image
+
+  publish_latest:
+    <<: *default_machine_job
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *set_version_env_variable
+      - run:
+          name: Load docker from file
+          command: docker load --input docker-image.tar
+      - run:
+          name: Publish latest image to Docker Hub
+          command: make push-latest-docker-image
+
+  tag_version:
+    <<: *default_machine_job
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *set_version_env_variable
+      - add_ssh_keys:
+          fingerprints:
+            - "df:83:d7:c7:d5:79:06:c2:3b:d1:fd:e2:a3:d1:12:c5"
+      - deploy:
+          name: Tag git repository
+          command: make git-tag
+
+workflows:
+  version: 2
+  publish:
+    jobs:
+      - checkout:
+          filters:
+            branches:
+              ignore: master
+      - build:
+          requires:
+            - checkout
+      - manual_approval:
+          type: approval
+          requires:
+            - build
+      - publish_versioned:
+          requires:
+            - manual_approval
+          context: CodacyDocker
+      - tag_version:
+          requires:
+            - publish_versioned
+
+  publish_master:
+    jobs:
+      - checkout:
+          filters:
+            branches:
+              only: master
+      - build:
+          requires:
+            - checkout
+      - publish_versioned:
+          requires:
+            - build
+          context: CodacyDocker
+      - publish_latest:
+          requires:
+            - publish_versioned
+          context: CodacyDocker
+      - tag_version:
+          requires:
+            - publish_versioned
