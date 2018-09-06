@@ -27,7 +27,7 @@ if [ $BRANCH != 'master' ] ; then
     exit
 fi
 #get highest tags across all branches, not just the current branch
-CURRENT_VERSION=$(git describe --tags --match [0-9][0-9][0-9][0-9]\.[0-9][0-9]\.[0-9]* $(git log --format="%H" -n 100) 2>/dev/null | sort | tail -1)
+CURRENT_VERSION=$(git describe --tags --match [0-9][0-9][0-9][0-9]\.[0-9][0-9]\.[0-9] $(git log --format="%H" -n 1000) 2>/dev/null | sort | head -n 1)
 if [ -z $CURRENT_VERSION ]; then
     CURRENT_VERSION="$YEAR.$MONTH.0"
 fi
