@@ -9,4 +9,4 @@ COPY get_next_version.sh .
 RUN mkdir /repo
 VOLUME /repo
 
-ENTRYPOINT ["./get_next_version_date.sh", "/repo"]
+ENTRYPOINT ["./get_next_version.sh", "/repo"]
