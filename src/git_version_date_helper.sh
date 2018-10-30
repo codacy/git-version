@@ -12,32 +12,31 @@ set -e
 source src/git_version_helper.sh
 
 function get_suffixed_git_tag () {
-  local path="$1"
-  local branch="$2"
+  local branch="$1"
   local current_version_suffixed
   local new_version
-
-  cd $path
-  current_version_suffixed=$(git describe --tags --match [0-9][0-9][0-9][0-9]\.[0-9][0-9]\.[0-9]* $(git rev-parse --verify HEAD) 2>/dev/null | sort -n -t . -k1,1 -k2,2 -k3,3 | tail -1)
-  new_version="$current_version_suffixed.$branch"
-  echo $new_version
+  local current_version_suffixed=$(git describe --tags --match *[0-9].*[0-9].*[0-9] $(git rev-parse --verify HEAD) 2>/dev/null |  egrep "\d{4}\.\d{2}\.\d{1,3}" | sort -n -t . -k1,1 -k2,2 -k3,3 | tail -1)
+  if [[ -z $current_version_suffixed ]]; then
+    local hash=$(get_current_commit_hash)
+    echo "0.0.0-$hash"
+  else
+    echo $current_version_suffixed
+  fi
 }
 
 function get_latest_version_git_tag () {
-  local path="$1"
-  cd $path
-  echo $(git describe --tags --match [0-9][0-9][0-9][0-9]\.[0-9][0-9]\.*[0-9] $(git log --format="%H" -n 1000) 2>/dev/null | sort | head -n 1)
+  echo $(git describe --tags --match *[0-9].*[0-9].*[0-9] $(git log --format="%H" -n 1000) 2>/dev/null | egrep "\d{4}\.\d{2}\.\d{1,3}$" | sort -n -t . -k1,1 -k2,2 -k3,3 | tail -n 1)
 }
 
 function bump_date_version () {
-  version=(${1//./ })
+  local version=(${1//./ })
   local year=$(get_current_year)
   local month=$(get_current_month)
   local curr_version_year=${version[0]:-$year}
   local curr_version_month=${version[1]:-$month}
   local curr_version_count=${version[2]:-0}
-  new_version_year=$year
-  new_version_month=$month
+  local new_version_year=$year
+  local new_version_month=$month
 
   if [[ $year -gt $curr_version_year ]]; then
       new_version_count=1

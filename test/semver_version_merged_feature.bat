@@ -2,7 +2,6 @@
 
 source src/git_version_semver_helper.sh
 load test_helper
-fixtures suite
 
 setup() {
   set_test_suite_tmpdir
@@ -38,22 +37,22 @@ setup() {
   git merge dev
 }
 
-@test "current branch is master" {
+@test "semver: current branch is master" {
   set_test_suite_tmpdir
-  branch=$(get_current_branch .)
+  local branch=$(get_current_branch)
   [ $branch == "master" ]
 }
 
-@test "current tag in master matches 1.0.0" {
+@test "semver: current tag in master matches 1.0.0" {
   set_test_suite_tmpdir
-  tag=$(get_latest_version_git_tag .)
+  local tag=$(get_latest_version_git_tag)
   [[ $tag =~ "1.0.0" ]]
 }
 
-@test "bumped version matches 1.0.1" {
+@test "semver: bumped version matches 1.0.1" {
   set_test_suite_tmpdir
-  latest_tag=$(get_latest_version_git_tag .)
-  commits_list=$(get_commit_list_since $latest_tag)
-  new_tag=$(bump_date_version $latest_tag "$commits_list")
+  latest_tag=$(get_latest_version_git_tag)
+  local commits_list=$(get_commit_list_since $latest_tag)
+  local new_tag=$(bump_date_version $latest_tag "$commits_list")
   [[ $new_tag =~ "1.1.0" ]]
 }

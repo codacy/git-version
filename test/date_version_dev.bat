@@ -2,7 +2,6 @@
 
 source src/git_version_date_helper.sh
 load test_helper
-fixtures suite
 
 setup() {
   set_test_suite_tmpdir
@@ -26,13 +25,12 @@ setup() {
 
 @test "current branch is dev" {
   set_test_suite_tmpdir
-  branch=$(get_current_branch .)
+  local branch=$(get_current_branch)
   [ $branch == "dev" ]
 }
 
 @test "current tag in dev matches 1970.01.1-" {
   set_test_suite_tmpdir
-  tag=$(get_suffixed_git_tag .)
-  echo $tag
+  local tag=$(get_suffixed_git_tag)
   [[ $tag =~ "1970.01.1-" ]]
 }

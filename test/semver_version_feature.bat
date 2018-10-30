@@ -2,7 +2,6 @@
 
 source src/git_version_semver_helper.sh
 load test_helper
-fixtures suite
 
 setup() {
   set_test_suite_tmpdir
@@ -30,14 +29,14 @@ setup() {
   git commit --no-gpg-sign -m "new file3.txt"
 }
 
-@test "current branch is FT-1111" {
+@test "semver: current branch is FT-1111" {
   set_test_suite_tmpdir
-  branch=$(get_current_branch .)
+  local branch=$(get_current_branch)
   [ $branch == "FT-1111" ]
 }
 
-@test "current tag in dev matches 1.0.0-" {
+@test "semver: current tag in dev matches 1.0.0-2*" {
   set_test_suite_tmpdir
-  tag=$(get_suffixed_git_tag .)
-  [[ $tag =~ "1.0.0-" ]]
+  local tag=$(get_suffixed_git_tag)
+  [[ $tag =~ "1.0.0-2" ]]
 }

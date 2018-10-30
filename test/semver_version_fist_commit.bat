@@ -7,11 +7,13 @@ setup() {
   set_test_suite_tmpdir
   cd $BATS_TEST_SUITE_TMPDIR
   git init
+
+  # Checkout to master and add one commit and a tag
+
   git checkout -b master
   touch file.txt
   git add file.txt
   git commit --no-gpg-sign -m "new file.txt"
-  git tag "1.0.0"
 }
 
 @test "semver: current branch is master" {
@@ -20,8 +22,8 @@ setup() {
   [ $branch == "master" ]
 }
 
-@test "semver: latest tag in master is 1.0.0" {
+@test "semver: current tag in master matches 0.0.0-" {
   set_test_suite_tmpdir
-  local tag=$(get_latest_version_git_tag)
-  [ $tag == "1.0.0" ]
+  local tag=$(get_suffixed_git_tag)
+  [[ $tag =~ "0.0.0-" ]]
 }
