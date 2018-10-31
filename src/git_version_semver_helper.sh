@@ -11,9 +11,7 @@ set -e
 source src/git_version_helper.sh
 
 function get_suffixed_git_tag () {
-  local branch="$1"
   local current_version_suffixed
-  local new_version
   local current_version_suffixed=$(git describe --tags --match *[0-9].*[0-9].*[0-9] $(git rev-parse --verify HEAD) 2>/dev/null |  egrep "\d{1,3}\.\d{1,3}\.\d{1,4}" | sort -n -t . -k1,1 -k2,2 -k3,3 | tail -1)
   if [[ -z $current_version_suffixed ]]; then
     local hash=$(get_current_commit_hash)
