@@ -38,7 +38,7 @@ function bump_date_version () {
 
   if [[ $year -gt $curr_version_year ]]; then
       new_version_count=1
-  elif [ $month -gt $curr_version_month ]; then
+  elif [[ $month -gt $curr_version_month ]]; then
       new_version_count=1
   else
       new_version_count=$((curr_version_count+1))
