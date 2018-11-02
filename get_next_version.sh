@@ -26,5 +26,5 @@ if [[ -n "$REPO_PATH" ]]; then
   echo $new_version
 else
     echo "You are missing the path. Usage:"
-    echo "$ $0 {path) [semver|date]"
+    echo "$(basename $0) <path> [semver | date]"
 fi
