@@ -3,7 +3,7 @@
 # Variables
 PROJECT_NAME?=$$(git remote -v | head -n1 | awk '{print $$2}' | sed 's/.*\///' | sed 's/\.git//')
 CWD=$(shell pwd)
-VERSION_NUMBER?=$$(docker run -v $(CWD):/repo codacy/ci-git-version:latest)## lazy. run with VERSION_NUMBER=x to prevent slow runs
+VERSION_NUMBER?=$$(docker run -e TYPE=semver -v $(CWD):/repo codacy/ci-git-version:latest)## lazy. run with VERSION_NUMBER=x to prevent slow runs
 
 .PHONY: help
 help:
