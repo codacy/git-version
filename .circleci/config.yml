@@ -27,11 +27,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - workdir/.git
-            - workdir/.version
-            - workdir/Makefile
-            - workdir/Dockerfile
-            - workdir/get_next_version_date.sh
+            - workdir/*
   build:
     <<: *default_machine_job
     steps:

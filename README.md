@@ -4,13 +4,56 @@
 
 Git versioning used in Codacy.
 
-## Usage
-
-### Date based Versioning Model
-
 The goal is to have a simple versioning system for our internal projects that we can use to track the different releases.
 
-This tool creates a version with the format `YYYY-MM-{incremental-number}`
+This tools returns a different version depending on your current HEAD and commit messages.
+
+## Semver based Versioning Model
+
+Creates a version with the format `MAJOR-MINOR-PATCH`
+
+**To use this you need to be in the working dir of a git project:**
+```
+$ docker run -e TYPE=semver -v $(pwd):/repo codacy/ci-git-version
+1.0.0
+```
+
+Versions are incremented in master. The patch version is incremented by default, unless there is at least one commit since the last tag, containing `feature:` or `breaking:` in the message.
+
+On other branches the version is a variation of the latest common tag with master, and has the following format:
+
+`MAJOR-MINOR-PATCH-{number-of-commits}-{hash}-{branch}`
+
+*Example:*
+```
+---A---B---C <= Master (tag: 1.0.1)        L <= Master (new_version: 1.0.2)
+            \                             /
+             D---E---F---G---H---I---J---K <= Foo (new_version: 1.0.1-8-K.Foo)
+```
+
+
+*Example2 (with dev branch):*
+```
+---A---B---C <= Master (tag: 1.0.1)        L <= Master (new_version: 1.0.2)
+            \                             / <= Fast-forward merges to master (same commit id)
+             C                           L <= Dev (new_version: 1.0.1-8-L.Dev)
+              \                         /
+               E---F---G---H---I---J---K <= Foo (new_version: 1.0.1-7-K.Foo)
+```
+
+*Example3 (with breaking message):*
+```
+---A---B---C <= Master (tag: 1.0.1)        L <= Master (new_version: 2.0.0)
+            \                             /
+             D---E---F---G---H---I---J---K <= Foo (new_version: 1.0.1-8-K.Foo)
+                                         \\
+                                         message: "breaking: removed api parameter"
+```
+
+
+## Date based Versioning Model
+
+Creates a version with the format `YYYY-MM-{incremental-number}`
 
 **To use this you need to be in the working dir of a git project:**
 ```
@@ -18,7 +61,6 @@ $ docker run -v $(pwd):/repo codacy/ci-git-version
 2018.08.1
 ```
 
-This returns a different version depending on your current HEAD.
 The main version is only incremented on the master branch.
 On other branches the version is a variation of the latest common tag with master, and has the following format:
 
@@ -35,7 +77,7 @@ On other branches the version is a variation of the latest common tag with maste
 *Example2 (with dev branch):*
 ```
 ---A---B---C <= Master (tag: 2018.08.1)    L <= Master (new_version: 2018.08.2)
-            \                             / <= Only works with fast-forward merges to master (same commit id)
+            \                             / <= Fast-forward merges to master (same commit id)
              C                           L <= Dev (new_version: 2018.08.1-8-L.Dev)
               \                         /
                E---F---G---H---I---J---K <= Foo (new_version: 2018.08.1-7-K.Foo)
