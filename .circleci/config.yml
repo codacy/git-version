@@ -22,7 +22,11 @@ jobs:
       - run:
           name: Get version
           command: |
-            export VERSION_NUMBER=$(make get-next-version-number)
+            curl -sSL https://dist.crystal-lang.org/apt/setup.sh | sudo bash
+            sudo apt-get update
+            sudo apt-get install crystal libevent-core-2.0-5 libevent-dev libevent-extra-2.0-5 libevent-openssl-2.0-5 libevent-pthreads-2.0-5 libgmp-dev libgmpxx4ldbl libssl-dev libxml2-dev libyaml-dev libreadline-dev automake libtool git llvm libpcre3-dev build-essential -y
+            sudo make clean test build
+            export VERSION_NUMBER=$(./bin/git_version)
             echo $VERSION_NUMBER >> ~/workdir/.version
       - persist_to_workspace:
           root: ~/
@@ -36,11 +40,11 @@ jobs:
       - *set_version_env_variable
       - run:
           name: Build Docker image
-          command: make build
+          command: make docker_build
       - run:
           name: Save docker to file
           command: |
-            docker save --output docker-image.tar codacy/$CIRCLE_PROJECT_REPONAME:$VERSION_NUMBER
+            docker save --output docker-image.tar codacy/git_version:$VERSION_NUMBER
       - persist_to_workspace:
           root: ~/
           paths:
