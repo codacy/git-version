@@ -35,6 +35,11 @@ push-latest-docker-image: ## push the docker image with the "latest" tag to the 
 	docker tag codacy/git_version:$(VERSION) codacy/git_version:latest &&\
 	docker push codacy/git_version:latest
 
+.PHONY: git-tag
+git-tag: ## tag the current commit with the next version and push
+	git tag $(VERSION) &&\
+	git push --tags
+
 .PHONY: help
 help:
 	@echo "make help"

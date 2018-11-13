@@ -14,18 +14,24 @@ references:
         source $BASH_ENV
         echo $VERSION_NUMBER
 
+  compile_crystal: &compile_crystal
+    run:
+      name: Get version
+      command: |
+        curl -sSL https://dist.crystal-lang.org/apt/setup.sh | sudo bash
+        sudo apt-get update
+        sudo apt-get install crystal libevent-core-2.0-5 libevent-dev libevent-extra-2.0-5 libevent-openssl-2.0-5 libevent-pthreads-2.0-5 libgmp-dev libgmpxx4ldbl libssl-dev libxml2-dev libyaml-dev libreadline-dev automake libtool git llvm libpcre3-dev build-essential -y
+        sudo make clean test build
+
 jobs:
   checkout:
     <<: *default_machine_job
     steps:
       - checkout
+      - *compile_crystal
       - run:
           name: Get version
           command: |
-            curl -sSL https://dist.crystal-lang.org/apt/setup.sh | sudo bash
-            sudo apt-get update
-            sudo apt-get install crystal libevent-core-2.0-5 libevent-dev libevent-extra-2.0-5 libevent-openssl-2.0-5 libevent-pthreads-2.0-5 libgmp-dev libgmpxx4ldbl libssl-dev libxml2-dev libyaml-dev libreadline-dev automake libtool git llvm libpcre3-dev build-essential -y
-            sudo make clean test build
             export VERSION_NUMBER=$(./bin/git_version)
             echo $VERSION_NUMBER >> ~/workdir/.version
       - persist_to_workspace:
@@ -86,6 +92,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - *set_version_env_variable
+      - *compile_crystal
       - add_ssh_keys:
           fingerprints:
             - "df:83:d7:c7:d5:79:06:c2:3b:d1:fd:e2:a3:d1:12:c5"
