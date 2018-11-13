@@ -32,6 +32,8 @@ jobs:
           root: ~/
           paths:
             - workdir/*
+      - store_artifacts:
+          path: bin
   build:
     <<: *default_machine_job
     steps:
