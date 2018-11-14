@@ -2,13 +2,13 @@ require "option_parser"
 
 require "file_utils"
 
-require "../git_version"
+require "../git-version"
 
 dev_branch = "dev"
 folder = FileUtils.pwd
 
 OptionParser.parse! do |parser|
-  parser.banner = "Usage: git_version [arguments]"
+  parser.banner = "Usage: git-version [arguments]"
   parser.on("-folder FOLDER", "--folder=FOLDER", "Execute the command in the defined folder") { |f| folder = f }
   parser.on("-dev-branch BRANCH", "--dev-branch=BRANCH", "Specifies the development branch") { |branch| dev_branch = branch }
   parser.on("-h", "--help", "Show this help") { puts parser }

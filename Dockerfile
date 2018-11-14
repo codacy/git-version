@@ -25,9 +25,9 @@ LABEL maintainer="team@codacy.com"
 
 RUN apk add --update --no-cache --force-overwrite gc-dev pcre-dev libevent-dev git
 
-COPY --from=builder /workspace/bin/git_version /bin
+COPY --from=builder /workspace/bin/git-version /bin
 
 RUN mkdir -p /repo
 VOLUME /repo
 
-CMD ["/bin/git_version", "--folder=/repo"]
+CMD ["/bin/git-version", "--folder=/repo"]

@@ -1,8 +1,6 @@
 CRYSTAL=/usr/bin/crystal
 CRYSTAL_FLAGS=--release
 
-VERSION := $(shell ./bin/git_version)
-
 all: clean fmt test build docker_build ## clean and produce target binary and docker image
 
 test: ## runs crystal tests
@@ -13,13 +11,13 @@ fmt: ## format the crystal sources
 
 build: ## compiles from crystal sources
 	mkdir -p bin
-	$(CRYSTAL) build $(CRYSTAL_FLAGS) src/entrypoint/git_version.cr -o bin/git_version
+	$(CRYSTAL) build $(CRYSTAL_FLAGS) src/entrypoint/git-version.cr -o bin/git-version
 
 .PHONY: docker
 docker: build docker_build ## compiles from sources and produce the docker image
 
 docker_build: ## build the docker image
-	docker build -t codacy/git_version:${VERSION} .
+	docker build -t codacy/git-version:$(shell ./bin/git-version) .
 
 clean: ## clean target directories
 	rm -rf bin
@@ -27,13 +25,13 @@ clean: ## clean target directories
 .PHONY: push-docker-image
 push-docker-image: ## push the docker image to the registry (DOCKER_USER and DOCKER_PASS mandatory)
 	docker login -u $(DOCKER_USER) -p $(DOCKER_PASS) &&\
-	docker push codacy/git_version:$(VERSION)
+	docker push codacy/git-version:$(shell ./bin/git-version)
 
 .PHONY: push-latest-docker-image
 push-latest-docker-image: ## push the docker image with the "latest" tag to the registry (DOCKER_USER and DOCKER_PASS mandatory)
 	docker login -u $(DOCKER_USER) -p $(DOCKER_PASS) &&\
-	docker tag codacy/git_version:$(VERSION) codacy/git_version:latest &&\
-	docker push codacy/git_version:latest
+	docker tag codacy/git-version:$(shell ./bin/git-version) codacy/git-version:latest &&\
+	docker push codacy/git-version:latest
 
 .PHONY: git-tag
 git-tag: ## tag the current commit with the next version and push

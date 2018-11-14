@@ -32,7 +32,7 @@ jobs:
       - run:
           name: Get version
           command: |
-            export VERSION_NUMBER=$(./bin/git_version)
+            export VERSION_NUMBER=$(./bin/git-version)
             echo $VERSION_NUMBER >> ~/workdir/.version
       - persist_to_workspace:
           root: ~/
@@ -52,7 +52,7 @@ jobs:
       - run:
           name: Save docker to file
           command: |
-            docker save --output docker-image.tar codacy/git_version:$VERSION_NUMBER
+            docker save --output docker-image.tar codacy/git-version:$VERSION_NUMBER
       - persist_to_workspace:
           root: ~/
           paths:

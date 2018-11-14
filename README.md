@@ -46,7 +46,7 @@ Creates a version with the format `MAJOR.MINOR.PATCH`
 
 **To use this you need to be in the working dir of a git project:**
 ```
-$ ./git_version
+$ ./git-version
 1.0.0
 ```
 
@@ -62,26 +62,26 @@ On the `dev` branch the format is following:
 
 *Example:*
 ```
----A---B---C <= Master (tag: 1.0.1)        L <= Master (git_version: 1.0.2)
+---A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 1.0.2)
             \                             /
-             D---E---F---G---H---I---J---K <= Foo (git_version: 1.0.2-foo.5e30d83)
+             D---E---F---G---H---I---J---K <= Foo (git-version: 1.0.2-foo.5e30d83)
 ```
 
 
 *Example2 (with dev branch):*
 ```
----A---B---C <= Master (tag: 1.0.1)        L <= Master (git_version: 1.0.2)
+---A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 1.0.2)
             \                             / <= Fast-forward merges to master (same commit id)
-             C                           L <= Dev (git_version: 1.0.2-SNAPSHOT.5e30d83)
+             C                           L <= Dev (git-version: 1.0.2-SNAPSHOT.5e30d83)
               \                         /
                E---F---G---H---I---J---K <= Foo (new_version: 1.0.1-foo.5e30d83)
 ```
 
 *Example3 (with breaking message):*
 ```
----A---B---C <= Master (tag: 1.0.1)        L <= Master (git_version: 2.0.0)
+---A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 2.0.0)
             \                             /
-             D---E---F---G---H---I---J---K <= Foo (git_version: 2.0.0-foo.5e30d83)
+             D---E---F---G---H---I---J---K <= Foo (git-version: 2.0.0-foo.5e30d83)
                                          \\
                                          message: "breaking: removed api parameter"
 ```
@@ -101,7 +101,7 @@ jobs:
       - run:
           name: get new version
           command: |
-            NEW_VERSION=$(docker run --rm -v $(pwd):/repo codacy/git_version)
+            NEW_VERSION=$(docker run --rm -v $(pwd):/repo codacy/git-version)
             echo $NEW_VERSION
 ```
 

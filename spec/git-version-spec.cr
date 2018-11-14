@@ -2,7 +2,7 @@ require "spec"
 require "file_utils"
 require "./utils"
 
-require "../src/git_version"
+require "../src/git-version"
 
 include Utils
 describe GitVersion do
