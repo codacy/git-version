@@ -86,7 +86,7 @@ On the `dev` branch the format is following:
                                          message: "breaking: removed api parameter"
 ```
 
-#### CircleCI
+## CircleCI
 
 Use this image directly on CircleCI for simple steps
 
@@ -105,7 +105,7 @@ jobs:
             echo $NEW_VERSION
 ```
 
-# Build and Publish
+## Build and Publish
 
 The pipeline in `circleci` can deploy this for you when the code is pushed to the remote.
 
