@@ -44,7 +44,7 @@ module GitVersion
       return (exec "git symbolic-ref --short HEAD")[0]
     end
 
-    def current_commit_hash() : String
+    def current_commit_hash : String
       cmd = "git rev-parse --verify HEAD --short"
       return (exec cmd)[0].rjust(7, '0')
     end

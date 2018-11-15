@@ -1,11 +1,13 @@
 CRYSTAL=/usr/bin/crystal
 CRYSTAL_FLAGS=--release
 
-all: clean fmt test build docker_build ## clean and produce target binary and docker image
+all: fmt test build docker_build ## clean and produce target binary and docker image
 
+.PHONY: test
 test: ## runs crystal tests
 	$(CRYSTAL) spec spec/*.cr
 
+.PHONY: fmt
 fmt: ## format the crystal sources
 	$(CRYSTAL) tool format
 
@@ -19,6 +21,7 @@ docker: build docker_build ## compiles from sources and produce the docker image
 docker_build: ## build the docker image
 	docker build -t codacy/git-version:$(shell ./bin/git-version) .
 
+.PHONY: clean
 clean: ## clean target directories
 	rm -rf bin
 
