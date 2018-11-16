@@ -52,7 +52,6 @@ module GitVersion
     def get_bumps(latest)
       begin
         last_commit = (exec "git show-ref -s #{latest}")[0]
-        # last_commit = (exec "git merge-base #{base_commit} #{current_branch()}")[0]
         return (exec "git log --pretty=%B #{last_commit}..HEAD")
       rescue
         return [] of String
@@ -62,11 +61,11 @@ module GitVersion
     def get_version
       cb = current_branch
 
-      masterTags = tags_by_branch(cb)
+      branchTags = tags_by_branch(cb)
 
       latestVersion = BASE_VERISON
 
-      masterTags.each do |tag|
+      branchTags.each do |tag|
         begin
           currentTag = SemanticVersion.parse(tag)
           if (latestVersion < currentTag)

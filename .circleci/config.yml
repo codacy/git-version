@@ -24,7 +24,7 @@ references:
         sudo make clean test build
 
 jobs:
-  checkout:
+  checkout_and_compile:
     <<: *default_machine_job
     steps:
       - checkout
@@ -40,7 +40,7 @@ jobs:
             - workdir/*
       - store_artifacts:
           path: bin
-  build:
+  build_docker:
     <<: *default_machine_job
     steps:
       - attach_workspace:
@@ -92,7 +92,6 @@ jobs:
       - attach_workspace:
           at: ~/
       - *set_version_env_variable
-      - *compile_crystal
       - add_ssh_keys:
           fingerprints:
             - "df:83:d7:c7:d5:79:06:c2:3b:d1:fd:e2:a3:d1:12:c5"
@@ -104,17 +103,17 @@ workflows:
   version: 2
   publish:
     jobs:
-      - checkout:
+      - checkout_and_compile:
           filters:
             branches:
               ignore: master
-      - build:
+      - build_docker:
           requires:
             - checkout
       - manual_approval:
           type: approval
           requires:
-            - build
+            - build_docker
       - publish_versioned:
           requires:
             - manual_approval
