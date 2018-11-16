@@ -109,7 +109,7 @@ workflows:
               ignore: master
       - build_docker:
           requires:
-            - checkout
+            - checkout_and_compile
       - manual_approval:
           type: approval
           requires:
