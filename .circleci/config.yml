@@ -14,21 +14,33 @@ references:
         source $BASH_ENV
         echo $VERSION_NUMBER
 
+  compile_crystal: &compile_crystal
+    run:
+      name: Get version
+      command: |
+        curl -sSL https://dist.crystal-lang.org/apt/setup.sh | sudo bash
+        sudo apt-get update
+        sudo apt-get install crystal libevent-core-2.0-5 libevent-dev libevent-extra-2.0-5 libevent-openssl-2.0-5 libevent-pthreads-2.0-5 libgmp-dev libgmpxx4ldbl libssl-dev libxml2-dev libyaml-dev libreadline-dev automake libtool git llvm libpcre3-dev build-essential -y
+        sudo make clean test build
+
 jobs:
-  checkout:
+  checkout_and_compile:
     <<: *default_machine_job
     steps:
       - checkout
+      - *compile_crystal
       - run:
           name: Get version
           command: |
-            export VERSION_NUMBER=$(make get-next-version-number)
+            export VERSION_NUMBER=$(./bin/git-version)
             echo $VERSION_NUMBER >> ~/workdir/.version
       - persist_to_workspace:
           root: ~/
           paths:
             - workdir/*
-  build:
+      - store_artifacts:
+          path: bin
+  build_docker:
     <<: *default_machine_job
     steps:
       - attach_workspace:
@@ -36,11 +48,11 @@ jobs:
       - *set_version_env_variable
       - run:
           name: Build Docker image
-          command: make build
+          command: make docker_build
       - run:
           name: Save docker to file
           command: |
-            docker save --output docker-image.tar codacy/$CIRCLE_PROJECT_REPONAME:$VERSION_NUMBER
+            docker save --output docker-image.tar codacy/git-version:$VERSION_NUMBER
       - persist_to_workspace:
           root: ~/
           paths:
@@ -91,17 +103,17 @@ workflows:
   version: 2
   publish:
     jobs:
-      - checkout:
+      - checkout_and_compile:
           filters:
             branches:
               ignore: master
-      - build:
+      - build_docker:
           requires:
-            - checkout
+            - checkout_and_compile
       - manual_approval:
           type: approval
           requires:
-            - build
+            - build_docker
       - publish_versioned:
           requires:
             - manual_approval
