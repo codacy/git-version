@@ -124,16 +124,16 @@ workflows:
 
   publish_master:
     jobs:
-      - checkout:
+      - checkout_and_compile:
           filters:
             branches:
               only: master
-      - build:
+      - build_docker:
           requires:
-            - checkout
+            - checkout_and_compile
       - publish_versioned:
           requires:
-            - build
+            - build_docker
           context: CodacyDocker
       - publish_latest:
           requires:
