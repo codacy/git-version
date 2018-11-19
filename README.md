@@ -1,6 +1,11 @@
+
 # git-version
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c811f6b557ee4e44ad373084015ba0b3)](https://www.codacy.com/app/Codacy/git-version?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=codacy/git-version&amp;utm_campaign=Badge_Grade)
+[![CircleCI](https://circleci.com/gh/codacy/git-version.svg?style=svg)](https://circleci.com/gh/codacy/git-version)
+
 Git versioning used in Codacy.
+
 
 The goal is to have a simple versioning system for our internal projects that we can use to track the different releases.
 
@@ -118,6 +123,30 @@ To get the list of available commands:
 $ make help
 ```
 
-### Credits
+## Credits
 
 Great inspiration for this tool has been taken from: [GitVersion](https://github.com/GitTools/GitVersion)
+
+## What is Codacy
+
+[Codacy](https://www.codacy.com/) is an Automated Code Review Tool that monitors your technical debt, helps you improve your code quality, teaches best practices to your developers, and helps you save time in Code Reviews.
+
+### Among Codacy’s features
+
+- Identify new Static Analysis issues
+- Commit and Pull Request Analysis with GitHub, BitBucket/Stash, GitLab (and also direct git repositories)
+- Auto-comments on Commits and Pull Requests
+- Integrations with Slack, HipChat, Jira, YouTrack
+- Track issues in Code Style, Security, Error Proneness, Performance, Unused Code and other categories
+
+Codacy also helps keep track of Code Coverage, Code Duplication, and Code Complexity.
+
+Codacy supports PHP, Python, Ruby, Java, JavaScript, and Scala, among others.
+
+## Free for Open Source
+
+Codacy is free for Open Source projects.
+
+## License
+
+git-version is available under the MIT license. See the LICENSE file for more info.
