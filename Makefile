@@ -38,7 +38,7 @@ push-latest-docker-image: ## push the docker image with the "latest" tag to the 
 
 .PHONY: git-tag
 git-tag: ## tag the current commit with the next version and push
-	git tag $(VERSION) &&\
+	git tag $(shell ./bin/git-version) &&\
 	git push --tags
 
 .PHONY: help
