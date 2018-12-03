@@ -93,7 +93,7 @@ describe GitVersion do
 
     version = git.get_version
 
-    version.should eq("3.0.0-SNAPSHOT.#{hash}")
+    version.should eq("2.0.0-SNAPSHOT.#{hash}")
 
     tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "feature: XYZ")
 
@@ -101,7 +101,7 @@ describe GitVersion do
 
     version = git.get_version
 
-    version.should eq("3.1.0-SNAPSHOT.#{hash}")
+    version.should eq("2.0.0-SNAPSHOT.#{hash}")
 
     tmp.cleanup
   end
@@ -305,6 +305,36 @@ describe GitVersion do
     tmp.exec %(git rebase dev)
     version = git.get_version
     version.should eq("1.0.1")
+
+    tmp.cleanup
+  end
+
+  it "bump version only once in presence of merge commit message" do
+    tmp = InTmp.new
+
+    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+
+    tmp.exec %(git init)
+    tmp.exec %(git checkout -b master)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+    tmp.exec %(git tag "1.0.0")
+    tmp.exec %(git checkout -b dev)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: 2")
+    
+    tmp.exec %(git checkout master)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "3")
+
+    tmp.exec %(git checkout dev)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "4")
+    tmp.exec %(git rebase origin/master)
+    
+    tmp.exec %(git checkout master)
+    tmp.exec %(git merge --no-ff dev)
+    # e.g. commit added when merging by bitbucket, no easy way to produce it automatically...
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "Merged xyz (123) breaking:")
+
+    version = git.get_version
+    version.should eq("2.0.0")
 
     tmp.cleanup
   end

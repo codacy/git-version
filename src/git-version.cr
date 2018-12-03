@@ -87,6 +87,7 @@ module GitVersion
           nil,
         )
 
+      major = false
       get_bumps(latestTaggedVersion).each do |bump|
         commit = bump.downcase
         if commit.includes?(MAJOR_BUMP_COMMENT)
@@ -98,17 +99,25 @@ module GitVersion
               latestVersion.prerelease,
               latestVersion.build,
             )
+          major = true
+          break
         end
+      end
 
-        if commit.includes?(MINOR_BUMP_COMMENT)
-          latestVersion =
-            SemanticVersion.new(
-              latestVersion.major,
-              latestVersion.minor + 1,
-              0,
-              latestVersion.prerelease,
-              latestVersion.build,
-            )
+      if !major
+        get_bumps(latestTaggedVersion).each do |bump|
+          commit = bump.downcase
+          if commit.includes?(MINOR_BUMP_COMMENT)
+            latestVersion =
+              SemanticVersion.new(
+                latestVersion.major,
+                latestVersion.minor + 1,
+                0,
+                latestVersion.prerelease,
+                latestVersion.build,
+              )
+            break
+          end
         end
       end
 
