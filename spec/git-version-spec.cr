@@ -320,14 +320,14 @@ describe GitVersion do
     tmp.exec %(git tag "1.0.0")
     tmp.exec %(git checkout -b dev)
     tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: 2")
-    
+
     tmp.exec %(git checkout master)
     tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "3")
 
     tmp.exec %(git checkout dev)
     tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "4")
     tmp.exec %(git rebase origin/master)
-    
+
     tmp.exec %(git checkout master)
     tmp.exec %(git merge --no-ff dev)
     # e.g. commit added when merging by bitbucket, no easy way to produce it automatically...
@@ -338,4 +338,57 @@ describe GitVersion do
 
     tmp.cleanup
   end
+
+  it "when in master should not consider pre-release versions for major bumps" do
+    tmp = InTmp.new
+
+    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+
+    tmp.exec %(git init)
+    tmp.exec %(git checkout -b master)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+    tmp.exec %(git tag "1.0.0")
+    tmp.exec %(git checkout -b dev)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: 2")
+
+    version = git.get_version
+    hash = git.current_commit_hash
+    tmp.exec %(git tag "#{version}")
+    version.should eq("2.0.0-SNAPSHOT.#{hash}")
+
+    tmp.exec %(git checkout master)
+    tmp.exec %(git merge --no-ff dev)
+
+    version = git.get_version
+    version.should eq("2.0.0")
+
+    tmp.cleanup
+  end
+
+  it "when in master should not consider pre-release versions for minor bumps" do
+    tmp = InTmp.new
+
+    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+
+    tmp.exec %(git init)
+    tmp.exec %(git checkout -b master)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+    tmp.exec %(git tag "1.0.0")
+    tmp.exec %(git checkout -b dev)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "2")
+
+    version = git.get_version
+    hash = git.current_commit_hash
+    tmp.exec %(git tag "#{version}")
+    version.should eq("1.0.1-SNAPSHOT.#{hash}")
+
+    tmp.exec %(git checkout master)
+    tmp.exec %(git merge --no-ff dev)
+
+    version = git.get_version
+    version.should eq("1.0.1")
+
+    tmp.cleanup
+  end
+
 end
