@@ -68,7 +68,9 @@ module GitVersion
       branchTags.each do |tag|
         begin
           currentTag = SemanticVersion.parse(tag)
-          if (latestVersion < currentTag)
+          if !currentTag.prerelease.identifiers.empty?
+            next
+          elsif (latestVersion < currentTag)
             latestVersion = currentTag
           end
         rescue

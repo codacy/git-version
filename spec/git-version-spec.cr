@@ -159,7 +159,7 @@ describe GitVersion do
 
     version.should eq("3.0.1")
 
-    tmp.exec %(git merge --no-ff my-fancy.branch3)
+    tmp.exec %(git merge --no-gpg-sign --no-ff my-fancy.branch3)
 
     version = git.get_version
 
@@ -268,12 +268,12 @@ describe GitVersion do
     version.should eq("2.0.1-feature3.#{hash}")
 
     tmp.exec %(git checkout master)
-    tmp.exec %(git merge feature1)
+    tmp.exec %(git merge --no-gpg-sign feature1)
     version = git.get_version
     version.should eq("2.1.0")
     tmp.exec %(git tag "2.1.0")
 
-    tmp.exec %(git merge feature3)
+    tmp.exec %(git merge --no-gpg-sign feature3)
     version = git.get_version
     version.should eq("2.1.1")
     tmp.exec %(git tag "2.1.1")
@@ -320,16 +320,16 @@ describe GitVersion do
     tmp.exec %(git tag "1.0.0")
     tmp.exec %(git checkout -b dev)
     tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: 2")
-    
+
     tmp.exec %(git checkout master)
     tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "3")
 
     tmp.exec %(git checkout dev)
     tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "4")
-    tmp.exec %(git rebase origin/master)
-    
+    tmp.exec %(git rebase master)
+
     tmp.exec %(git checkout master)
-    tmp.exec %(git merge --no-ff dev)
+    tmp.exec %(git merge --no-gpg-sign --no-ff dev)
     # e.g. commit added when merging by bitbucket, no easy way to produce it automatically...
     tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "Merged xyz (123) breaking:")
 
@@ -338,4 +338,57 @@ describe GitVersion do
 
     tmp.cleanup
   end
+
+  it "when in master should not consider pre-release versions for major bumps" do
+    tmp = InTmp.new
+
+    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+
+    tmp.exec %(git init)
+    tmp.exec %(git checkout -b master)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+    tmp.exec %(git tag "1.0.0")
+    tmp.exec %(git checkout -b dev)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: 2")
+
+    version = git.get_version
+    hash = git.current_commit_hash
+    tmp.exec %(git tag "#{version}")
+    version.should eq("2.0.0-SNAPSHOT.#{hash}")
+
+    tmp.exec %(git checkout master)
+    tmp.exec %(git merge --no-gpg-sign --no-ff dev)
+
+    version = git.get_version
+    version.should eq("2.0.0")
+
+    tmp.cleanup
+  end
+
+  it "when in master should not consider pre-release versions for minor bumps" do
+    tmp = InTmp.new
+
+    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+
+    tmp.exec %(git init)
+    tmp.exec %(git checkout -b master)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+    tmp.exec %(git tag "1.0.0")
+    tmp.exec %(git checkout -b dev)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "2")
+
+    version = git.get_version
+    hash = git.current_commit_hash
+    tmp.exec %(git tag "#{version}")
+    version.should eq("1.0.1-SNAPSHOT.#{hash}")
+
+    tmp.exec %(git checkout master)
+    tmp.exec %(git merge --no-gpg-sign --no-ff dev)
+
+    version = git.get_version
+    version.should eq("1.0.1")
+
+    tmp.cleanup
+  end
+
 end
