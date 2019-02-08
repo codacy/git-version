@@ -55,6 +55,36 @@ jobs:
           paths:
             - workdir/docker-image.tar
 
+  build_static:
+    <<: *default_machine_job
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *set_version_env_variable
+      - run:
+          name: Compile
+          command: make clean buildStatic
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - workdir/*
+      - store_artifacts:
+          path: bin
+
+  publish-github-release:
+    docker:
+      - image: circleci/golang:1.8
+    working_directory: ~/workdir
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            go get github.com/tcnksm/ghr
+            VERSION=$(cat ~/workdir/.version)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ~/workdir/bin/
+
   publish_versioned:
     <<: *default_machine_job
     environment:
@@ -118,6 +148,13 @@ workflows:
       - compile:
           requires:
             - codacy/checkout_and_version
+      - build_static:
+          requires:
+            - compile
+      - publish-github-release:
+          requires:
+            - build_static
+          context: CodacyAWS
       - build_docker:
           requires:
             - compile
