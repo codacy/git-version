@@ -391,4 +391,53 @@ describe GitVersion do
     tmp.cleanup
   end
 
+  it "bump properly major and reset minor" do
+    tmp = InTmp.new
+
+    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+
+    tmp.exec %(git init)
+    tmp.exec %(git checkout -b master)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+    tmp.exec %(git tag "0.1.0")
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m ":breaking: 2")
+
+    version = git.get_version
+    version.should eq("1.0.0")
+
+    tmp.cleanup
+  end
+
+  it "should bump the breaking even with a pre-release tag" do
+    tmp = InTmp.new
+
+    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+
+    tmp.exec %(git init)
+    tmp.exec %(git checkout -b master)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+    tmp.exec %(git tag "0.1.0-asd")
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m ":breaking: 2")
+
+    version = git.get_version
+    version.should eq("1.0.0")
+
+    tmp.cleanup
+  end
+
+  it "should bump the breaking even without any other tag" do
+    tmp = InTmp.new
+
+    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+
+    tmp.exec %(git init)
+    tmp.exec %(git checkout -b master)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: 1")
+
+    version = git.get_version
+    version.should eq("1.0.0")
+
+    tmp.cleanup
+  end
+
 end
