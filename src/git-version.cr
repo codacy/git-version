@@ -51,8 +51,13 @@ module GitVersion
 
     def get_bumps(latest)
       begin
-        last_commit = (exec "git show-ref -s #{latest}")[0]
-        return (exec "git log --pretty=%B #{last_commit}..HEAD")
+        latest_exists = (exec "git tag -l #{latest}")
+        if latest_exists.any?
+          last_commit = (exec "git show-ref -s #{latest}")[0]
+          return (exec "git log --pretty=%B #{last_commit}..HEAD")
+        else
+          return (exec "git log --pretty=%B")
+        end
       rescue
         return [] of String
       end
@@ -96,7 +101,7 @@ module GitVersion
           latestVersion =
             SemanticVersion.new(
               latestVersion.major + 1,
-              latestVersion.minor,
+              0,
               0,
               latestVersion.prerelease,
               latestVersion.build,
@@ -126,21 +131,23 @@ module GitVersion
       if cb == MASTER_BRANCH
         #
       elsif cb == @devBranch
+        prerelease = [DEV_BRANCH_SUFFIX, current_commit_hash()] of String | Int32
         latestVersion =
           SemanticVersion.new(
             latestVersion.major,
             latestVersion.minor,
             latestVersion.patch,
-            "#{DEV_BRANCH_SUFFIX}.#{current_commit_hash()}",
+            SemanticVersion::Prerelease.new(prerelease),
             nil
           )
       else
+        prerelease = [cb.downcase.gsub(/[^a-zA-Z0-9]/, ""), current_commit_hash()] of String | Int32
         latestVersion =
           SemanticVersion.new(
             latestVersion.major,
             latestVersion.minor,
             latestVersion.patch,
-            "#{cb.downcase.gsub(/[^a-zA-Z0-9]/, "")}.#{current_commit_hash()}",
+            SemanticVersion::Prerelease.new(prerelease),
             nil
           )
       end
