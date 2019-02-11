@@ -1,4 +1,3 @@
-
 # git-version
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c811f6b557ee4e44ad373084015ba0b3)](https://www.codacy.com/app/Codacy/git-version?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=codacy/git-version&amp;utm_campaign=Badge_Grade)
@@ -6,7 +5,6 @@
 [![](https://images.microbadger.com/badges/version/codacy/git-version.svg)](https://microbadger.com/images/codacy/git-version "Get your own version badge on microbadger.com")
 
 Git versioning used in Codacy.
-
 
 The goal is to have a simple versioning system for our internal projects that we can use to track the different releases.
 
@@ -50,7 +48,7 @@ brew install \
 
 Creates a version with the format `MAJOR.MINOR.PATCH`
 
-**To use this you need to be in the working dir of a git project:**
+_To use this you need to be in the working dir of a git project:_
 ```
 $ ./git-version
 1.0.0
@@ -72,7 +70,6 @@ On the `dev` branch the format is following:
             \                             /
              D---E---F---G---H---I---J---K <= Foo (git-version: 1.0.2-foo.5e30d83)
 ```
-
 
 *Example2 (with dev branch):*
 ```
@@ -134,11 +131,11 @@ Great inspiration for this tool has been taken from: [GitVersion](https://github
 
 ### Among Codacy’s features
 
-- Identify new Static Analysis issues
-- Commit and Pull Request Analysis with GitHub, BitBucket/Stash, GitLab (and also direct git repositories)
-- Auto-comments on Commits and Pull Requests
-- Integrations with Slack, HipChat, Jira, YouTrack
-- Track issues in Code Style, Security, Error Proneness, Performance, Unused Code and other categories
+  - Identify new Static Analysis issues
+  - Commit and Pull Request Analysis with GitHub, BitBucket/Stash, GitLab (and also direct git repositories)
+  - Auto-comments on Commits and Pull Requests
+  - Integrations with Slack, HipChat, Jira, YouTrack
+  - Track issues in Code Style, Security, Error Proneness, Performance, Unused Code and other categories
 
 Codacy also helps keep track of Code Coverage, Code Duplication, and Code Complexity.
 
