@@ -64,14 +64,14 @@ On the `dev` branch the format is following:
 
 `{MAJOR}.{MINOR}.{PATCH}-SNAPSHOT.{hash}`
 
-*Example:*
+_Example:_
 ```
 ---A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 1.0.2)
             \                             /
              D---E---F---G---H---I---J---K <= Foo (git-version: 1.0.2-foo.5e30d83)
 ```
 
-*Example2 (with dev branch):*
+_Example2 (with dev branch):_
 ```
 ---A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 1.0.2)
             \                             / <= Fast-forward merges to master (same commit id)
@@ -80,7 +80,7 @@ On the `dev` branch the format is following:
                E---F---G---H---I---J---K <= Foo (new_version: 1.0.1-foo.5e30d83)
 ```
 
-*Example3 (with breaking message):*
+_Example3 (with breaking message):_
 ```
 ---A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 2.0.0)
             \                             /
@@ -131,11 +131,11 @@ Great inspiration for this tool has been taken from: [GitVersion](https://github
 
 ### Among Codacy’s features
 
-  - Identify new Static Analysis issues
-  - Commit and Pull Request Analysis with GitHub, BitBucket/Stash, GitLab (and also direct git repositories)
-  - Auto-comments on Commits and Pull Requests
-  - Integrations with Slack, HipChat, Jira, YouTrack
-  - Track issues in Code Style, Security, Error Proneness, Performance, Unused Code and other categories
+- Identify new Static Analysis issues
+- Commit and Pull Request Analysis with GitHub, BitBucket/Stash, GitLab (and also direct git repositories)
+- Auto-comments on Commits and Pull Requests
+- Integrations with Slack, HipChat, Jira, YouTrack
+- Track issues in Code Style, Security, Error Proneness, Performance, Unused Code and other categories
 
 Codacy also helps keep track of Code Coverage, Code Duplication, and Code Complexity.
 
