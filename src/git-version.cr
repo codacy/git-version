@@ -16,7 +16,7 @@ module GitVersion
   MINOR_BUMP_COMMENT = "feature:"
 
   class Git
-    def initialize(@devBranch : String, @folder = FileUtils.pwd)
+    def initialize(@dev_branch : String, @folder = FileUtils.pwd)
       #
     end
 
@@ -50,61 +50,59 @@ module GitVersion
     end
 
     def get_bumps(latest)
-      begin
-        latest_exists = (exec "git tag -l #{latest}")
-        if latest_exists.any?
-          last_commit = (exec "git show-ref -s #{latest}")[0]
-          return (exec "git log --pretty=%B #{last_commit}..HEAD")
-        else
-          return (exec "git log --pretty=%B")
-        end
-      rescue
-        return [] of String
+      latest_exists = (exec "git tag -l #{latest}")
+      if latest_exists.any?
+        last_commit = (exec "git show-ref -s #{latest}")[0]
+        return (exec "git log --pretty=%B #{last_commit}..HEAD")
+      else
+        return (exec "git log --pretty=%B")
       end
+    rescue
+      return [] of String
     end
 
     def get_version
       cb = current_branch
 
-      branchTags = tags_by_branch(cb)
+      branch_tags = tags_by_branch(cb)
 
-      latestVersion = BASE_VERISON
+      latest_version = BASE_VERISON
 
-      branchTags.each do |tag|
+      branch_tags.each do |tag|
         begin
-          currentTag = SemanticVersion.parse(tag)
-          if !currentTag.prerelease.identifiers.empty?
+          current_tag = SemanticVersion.parse(tag)
+          if !current_tag.prerelease.identifiers.empty?
             next
-          elsif (latestVersion < currentTag)
-            latestVersion = currentTag
+          elsif (latest_version < current_tag)
+            latest_version = current_tag
           end
         rescue
           #
         end
       end
 
-      latestTaggedVersion = latestVersion
+      latest_tagged_version = latest_version
 
-      latestVersion =
+      latest_version =
         SemanticVersion.new(
-          latestVersion.major,
-          latestVersion.minor,
-          latestVersion.patch + 1,
+          latest_version.major,
+          latest_version.minor,
+          latest_version.patch + 1,
           nil,
           nil,
         )
 
       major = false
-      get_bumps(latestTaggedVersion).each do |bump|
+      get_bumps(latest_tagged_version).each do |bump|
         commit = bump.downcase
         if commit.includes?(MAJOR_BUMP_COMMENT)
-          latestVersion =
+          latest_version =
             SemanticVersion.new(
-              latestVersion.major + 1,
+              latest_version.major + 1,
               0,
               0,
-              latestVersion.prerelease,
-              latestVersion.build,
+              latest_version.prerelease,
+              latest_version.build,
             )
           major = true
           break
@@ -112,16 +110,16 @@ module GitVersion
       end
 
       if !major
-        get_bumps(latestTaggedVersion).each do |bump|
+        get_bumps(latest_tagged_version).each do |bump|
           commit = bump.downcase
           if commit.includes?(MINOR_BUMP_COMMENT)
-            latestVersion =
+            latest_version =
               SemanticVersion.new(
-                latestVersion.major,
-                latestVersion.minor + 1,
+                latest_version.major,
+                latest_version.minor + 1,
                 0,
-                latestVersion.prerelease,
-                latestVersion.build,
+                latest_version.prerelease,
+                latest_version.build,
               )
             break
           end
@@ -130,29 +128,29 @@ module GitVersion
 
       if cb == MASTER_BRANCH
         #
-      elsif cb == @devBranch
+      elsif cb == @dev_branch
         prerelease = [DEV_BRANCH_SUFFIX, current_commit_hash()] of String | Int32
-        latestVersion =
+        latest_version =
           SemanticVersion.new(
-            latestVersion.major,
-            latestVersion.minor,
-            latestVersion.patch,
+            latest_version.major,
+            latest_version.minor,
+            latest_version.patch,
             SemanticVersion::Prerelease.new(prerelease),
             nil
           )
       else
         prerelease = [cb.downcase.gsub(/[^a-zA-Z0-9]/, ""), current_commit_hash()] of String | Int32
-        latestVersion =
+        latest_version =
           SemanticVersion.new(
-            latestVersion.major,
-            latestVersion.minor,
-            latestVersion.patch,
+            latest_version.major,
+            latest_version.minor,
+            latest_version.patch,
             SemanticVersion::Prerelease.new(prerelease),
             nil
           )
       end
 
-      return latestVersion.to_s
+      return latest_version.to_s
     end
   end
 end

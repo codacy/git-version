@@ -23,9 +23,9 @@ describe GitVersion do
     tmp.exec %(git checkout -b dev)
     tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "2")
 
-    tagOnMaster = git.tags_by_branch("master")
+    tag_on_master = git.tags_by_branch("master")
 
-    tagOnMaster.should eq(["1.0.0"])
+    tag_on_master.should eq(["1.0.0"])
 
     current_branch = git.current_branch
 
@@ -439,5 +439,4 @@ describe GitVersion do
 
     tmp.cleanup
   end
-
 end
