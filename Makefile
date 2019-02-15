@@ -1,4 +1,4 @@
-CRYSTAL=/usr/bin/crystal
+CRYSTAL?=$(shell which crystal)
 CRYSTAL_FLAGS=--release
 
 VERSION?=$(shell ./bin/git-version)
