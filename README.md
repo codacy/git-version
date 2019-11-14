@@ -14,7 +14,7 @@ The versioning scheme is assumed to be __Semver__.
 
 ## Requirements
 
-To use this tool you will need to install a few dependencies (git version +2.22):
+To use this tool you will need to install a few dependencies:
 
 Ubuntu:
 ```

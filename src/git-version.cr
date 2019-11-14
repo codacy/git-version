@@ -41,13 +41,9 @@ module GitVersion
     end
 
     def current_branch_or_tag
-      # command available since git 2.22
-      branches = (exec "git branch --show-current")
-      if branches.any?
-        return branches[0]
-      else
-        return (exec "git describe --tags")[0]
-      end
+      return (exec "git symbolic-ref --short HEAD")[0]
+    rescue
+      return (exec "git describe --tags")[0]
     end
 
     def current_commit_hash : String

@@ -48,9 +48,6 @@ jobs:
           at: ~/
       - *set_version_env_variable
       - run:
-          name: Update git
-          command: sudo apt-get install git=2.22.0
-      - run:
           name: Build Docker image
           command: make docker_build
       - run:
@@ -71,9 +68,6 @@ jobs:
           at: ~/
       - *set_version_env_variable
       - run:
-          name: Update git
-          command: sudo apt-get install git=2.22.0
-      - run:
           name: Load docker from file
           command: docker load --input docker-image.tar
       - run:
@@ -86,9 +80,6 @@ jobs:
       - attach_workspace:
           at: ~/
       - *set_version_env_variable
-      - run:
-          name: Update git
-          command: sudo apt-get install git=2.22.0
       - run:
           name: Load docker from file
           command: docker load --input docker-image.tar
