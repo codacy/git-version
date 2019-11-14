@@ -49,9 +49,7 @@ jobs:
       - *set_version_env_variable
       - run:
           name: Update git
-          command: |
-            sudo apt-get update
-            sudo apt-get upgrade git
+          command: sudo apt-get install git=2.22.0
       - run:
           name: Build Docker image
           command: make docker_build
