@@ -40,8 +40,10 @@ module GitVersion
       return exec "git tag --merged #{branch}"
     end
 
-    def current_branch
+    def current_branch_or_tag
       return (exec "git symbolic-ref --short HEAD")[0]
+    rescue
+      return (exec "git describe --tags")[0]
     end
 
     def current_commit_hash : String
@@ -62,7 +64,7 @@ module GitVersion
     end
 
     def get_version
-      cb = current_branch
+      cb = current_branch_or_tag
 
       branch_tags = tags_by_branch(cb)
 
