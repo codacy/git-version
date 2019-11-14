@@ -41,7 +41,8 @@ module GitVersion
     end
 
     def current_branch
-      return (exec "git symbolic-ref --short HEAD")[0]
+      # command available since git 2.22
+      return (exec "git branch --show-current")[0]
     end
 
     def current_commit_hash : String
