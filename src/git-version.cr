@@ -40,9 +40,14 @@ module GitVersion
       return exec "git tag --merged #{branch}"
     end
 
-    def current_branch
+    def current_branch_or_tag
       # command available since git 2.22
-      return (exec "git branch --show-current")[0]
+      branches = (exec "git branch --show-current")
+      if branches.any?
+        return branches[0]
+      else
+        return (exec "git describe --tags")[0]
+      end
     end
 
     def current_commit_hash : String
@@ -63,7 +68,7 @@ module GitVersion
     end
 
     def get_version
-      cb = current_branch
+      cb = current_branch_or_tag
 
       branch_tags = tags_by_branch(cb)
 

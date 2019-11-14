@@ -1,4 +1,4 @@
-FROM codacy/ci-base:2.0.0 AS builder
+FROM codacy/ci-base:1.0.2 AS builder
 
 RUN apk add --update --no-cache --force-overwrite \
     openssl openssl-dev crystal shards g++ gc-dev \
@@ -19,7 +19,7 @@ RUN make test build
 
 
 
-FROM codacy/ci-base:2.0.0
+FROM codacy/ci-base:1.0.2
 
 LABEL maintainer="team@codacy.com"
 

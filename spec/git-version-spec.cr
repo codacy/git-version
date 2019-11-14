@@ -27,7 +27,7 @@ describe GitVersion do
 
     tag_on_master.should eq(["1.0.0"])
 
-    current_branch = git.current_branch
+    current_branch = git.current_branch_or_tag
 
     current_branch.should eq("dev")
 
@@ -436,6 +436,24 @@ describe GitVersion do
 
     version = git.get_version
     version.should eq("1.0.0")
+
+    tmp.cleanup
+  end
+
+  it "fallback to tag detection if in detached HEAD(on a tag)" do
+    tmp = InTmp.new
+
+    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+
+    tmp.exec %(git init)
+    tmp.exec %(git checkout -b master)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: 1")
+    tmp.exec %(git tag v1)
+    tmp.exec %(git checkout v1)
+
+    version = git.get_version
+    hash = git.current_commit_hash
+    version.should eq("1.0.0-v1.#{hash}")
 
     tmp.cleanup
   end
