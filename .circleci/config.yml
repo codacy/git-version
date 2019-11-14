@@ -20,7 +20,7 @@ references:
       command: |
         curl -sSL https://dist.crystal-lang.org/apt/setup.sh | sudo bash
         sudo apt-get update
-        sudo apt-get install crystal libevent-core-2.0-5 libevent-dev libevent-extra-2.0-5 libevent-openssl-2.0-5 libevent-pthreads-2.0-5 libgmp-dev libgmpxx4ldbl libssl-dev libxml2-dev libyaml-dev libreadline-dev automake libtool git llvm libpcre3-dev build-essential -y
+        sudo apt-get install crystal libssl-dev libxml2-dev libyaml-dev libgmp-dev libreadline-dev libz-dev automake libtool git build-essential -y
         sudo make clean test build
 
 jobs:
