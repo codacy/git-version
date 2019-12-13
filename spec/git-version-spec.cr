@@ -27,7 +27,7 @@ describe GitVersion do
 
     tag_on_master.should eq(["1.0.0"])
 
-    current_branch = git.current_branch
+    current_branch = git.current_branch_or_tag
 
     current_branch.should eq("#{git.dev_branch}")
 
