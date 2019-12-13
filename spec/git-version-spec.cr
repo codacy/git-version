@@ -6,13 +6,13 @@ require "../src/git-version"
 
 include Utils
 describe GitVersion do
-  it "should get the correct version in master and dev branch" do
+  it "should get the correct version in release and dev branches" do
     tmp = InTmp.new
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     tmp.exec %(git init)
-    tmp.exec %(git checkout -b master)
+    tmp.exec %(git checkout -b #{git.release_branch})
     tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
     tmp.exec %(git tag "1.0.0")
 
@@ -20,16 +20,16 @@ describe GitVersion do
 
     version.should eq("1.0.1")
 
-    tmp.exec %(git checkout -b dev)
+    tmp.exec %(git checkout -b #{git.dev_branch})
     tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "2")
 
-    tag_on_master = git.tags_by_branch("master")
+    tag_on_master = git.tags_by_branch("#{git.release_branch}")
 
     tag_on_master.should eq(["1.0.0"])
 
     current_branch = git.current_branch
 
-    current_branch.should eq("dev")
+    current_branch.should eq("#{git.dev_branch}")
 
     hash = git.current_commit_hash
 
@@ -56,7 +56,7 @@ describe GitVersion do
     tmp.exec %(git checkout -b my-fancy.branch)
     tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "2")
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     hash = git.current_commit_hash
 
@@ -77,7 +77,7 @@ describe GitVersion do
 
     tmp.exec %(git checkout -b dev)
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: XYZ")
 
@@ -109,7 +109,7 @@ describe GitVersion do
   it "bump on master after merging in various ways" do
     tmp = InTmp.new
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
@@ -171,7 +171,7 @@ describe GitVersion do
   it "correct version on feature after second commit" do
     tmp = InTmp.new
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
@@ -198,7 +198,7 @@ describe GitVersion do
   it "should retrieve correct first version on master" do
     tmp = InTmp.new
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
@@ -214,7 +214,7 @@ describe GitVersion do
   it "version properly after 5th commit" do
     tmp = InTmp.new
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
@@ -236,7 +236,7 @@ describe GitVersion do
   it "version properly with concurrent features" do
     tmp = InTmp.new
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
@@ -284,7 +284,7 @@ describe GitVersion do
   it "version releases with rebase from master" do
     tmp = InTmp.new
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
@@ -312,7 +312,7 @@ describe GitVersion do
   it "bump version only once in presence of merge commit message" do
     tmp = InTmp.new
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
@@ -342,7 +342,7 @@ describe GitVersion do
   it "when in master should not consider pre-release versions for major bumps" do
     tmp = InTmp.new
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
@@ -368,7 +368,7 @@ describe GitVersion do
   it "when in master should not consider pre-release versions for minor bumps" do
     tmp = InTmp.new
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
@@ -394,7 +394,7 @@ describe GitVersion do
   it "bump properly major and reset minor" do
     tmp = InTmp.new
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
@@ -411,7 +411,7 @@ describe GitVersion do
   it "should bump the breaking even with a pre-release tag" do
     tmp = InTmp.new
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
@@ -428,7 +428,7 @@ describe GitVersion do
   it "should bump the breaking even without any other tag" do
     tmp = InTmp.new
 
-    git = GitVersion::Git.new("dev", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
