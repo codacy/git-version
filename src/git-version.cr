@@ -14,7 +14,7 @@ module GitVersion
   MINOR_BUMP_COMMENT = "feature:"
 
   class Git
-    def initialize(@dev_branch : String, @release_branch : String, @folder = FileUtils.pwd)
+    def initialize(@dev_branch : String, @release_branch : String = "master" , @folder = FileUtils.pwd)
       #
     end
 
