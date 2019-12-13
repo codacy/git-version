@@ -10,13 +10,11 @@ module GitVersion
 
   DEV_BRANCH_SUFFIX = "SNAPSHOT"
 
-  MASTER_BRANCH = "master"
-
   MAJOR_BUMP_COMMENT = "breaking:"
   MINOR_BUMP_COMMENT = "feature:"
 
   class Git
-    def initialize(@dev_branch : String, @folder = FileUtils.pwd)
+    def initialize(@dev_branch : String, @release_branch : String = "master" , @folder = FileUtils.pwd)
       #
     end
 
@@ -34,6 +32,14 @@ module GitVersion
       end
 
       return strout.to_s.split('\n', remove_empty: true)
+    end
+
+    def dev_branch
+      return @dev_branch
+    end
+
+    def release_branch
+      return @release_branch
     end
 
     def tags_by_branch(branch)
@@ -128,7 +134,7 @@ module GitVersion
         end
       end
 
-      if cb == MASTER_BRANCH
+      if cb == @release_branch
         #
       elsif cb == @dev_branch
         prerelease = [DEV_BRANCH_SUFFIX, current_commit_hash()] of String | Int32
