@@ -1,4 +1,7 @@
-version: 2
+version: 2.1
+
+orbs:
+  codacy: codacy/base@1.2.1
 
 # Re-usable blocks to reduce boilerplate in job definitions.
 references:
@@ -8,33 +11,26 @@ references:
 
   set_version_env_variable: &set_version_env_variable
     run:
-      name: Define Environment Variable VERSION_NUMBER and ENV at Runtime
+      name: Define Environment Variable VERSION and ENV at Runtime
       command: |
-        echo export VERSION_NUMBER=$(cat ~/workdir/.version) >> $BASH_ENV
+        echo export VERSION=$(cat ~/workdir/.version) >> $BASH_ENV
         source $BASH_ENV
-        echo $VERSION_NUMBER
-
-  compile_crystal: &compile_crystal
-    run:
-      name: Get version
-      command: |
-        sudo apt-get update
-        sudo apt-get install libevent-core-2.0-5 libevent-dev libevent-extra-2.0-5 libevent-openssl-2.0-5 libevent-pthreads-2.0-5 libgmp-dev libgmpxx4ldbl libssl-dev libxml2-dev libyaml-dev libreadline-dev automake libtool git llvm libpcre3-dev build-essential -y
-        wget https://github.com/crystal-lang/crystal/releases/download/0.30.1/crystal_0.30.1-1_amd64.deb
-        sudo dpkg -i crystal_0.30.1-1_amd64.deb
-        sudo make clean test build
+        echo $VERSION
 
 jobs:
-  checkout_and_compile:
+  compile:
     <<: *default_machine_job
     steps:
-      - checkout
-      - *compile_crystal
+      - attach_workspace:
+          at: ~/
       - run:
           name: Get version
           command: |
-            export VERSION_NUMBER=$(./bin/git-version)
-            echo $VERSION_NUMBER >> ~/workdir/.version
+            sudo apt-get update
+            sudo apt-get install libevent-core-2.0-5 libevent-dev libevent-extra-2.0-5 libevent-openssl-2.0-5 libevent-pthreads-2.0-5 libgmp-dev libgmpxx4ldbl libssl-dev libxml2-dev libyaml-dev libreadline-dev automake libtool git llvm libpcre3-dev build-essential -y
+            wget https://github.com/crystal-lang/crystal/releases/download/0.30.1/crystal_0.30.1-1_amd64.deb
+            sudo dpkg -i crystal_0.30.1-1_amd64.deb
+            sudo make clean test build
       - persist_to_workspace:
           root: ~/
           paths:
@@ -53,7 +49,7 @@ jobs:
       - run:
           name: Save docker to file
           command: |
-            docker save --output docker-image.tar codacy/git-version:$VERSION_NUMBER
+            docker save --output docker-image.tar codacy/git-version:$VERSION
       - persist_to_workspace:
           root: ~/
           paths:
@@ -62,11 +58,10 @@ jobs:
   publish_versioned:
     <<: *default_machine_job
     environment:
-      PROJECT_NAME: ${CIRCLE_PROJECT_REPONAME}
+      PROJECT_NAME: $CIRCLE_PROJECT_REPONAME
     steps:
       - attach_workspace:
           at: ~/
-      - *set_version_env_variable
       - run:
           name: Load docker from file
           command: docker load --input docker-image.tar
@@ -87,30 +82,20 @@ jobs:
           name: Publish latest image to Docker Hub
           command: make push-latest-docker-image
 
-  tag_version:
-    <<: *default_machine_job
-    steps:
-      - attach_workspace:
-          at: ~/
-      - *set_version_env_variable
-      - add_ssh_keys:
-          fingerprints:
-            - "df:83:d7:c7:d5:79:06:c2:3b:d1:fd:e2:a3:d1:12:c5"
-      - deploy:
-          name: Tag git repository
-          command: make git-tag
-
 workflows:
   version: 2
   publish:
     jobs:
-      - checkout_and_compile:
+      - codacy/checkout_and_version
+      - compile:
+          requires:
+            - codacy/checkout_and_version
           filters:
             branches:
               ignore: master
       - build_docker:
           requires:
-            - checkout_and_compile
+            - compile
       - manual_approval:
           type: approval
           requires:
@@ -119,19 +104,23 @@ workflows:
           requires:
             - manual_approval
           context: CodacyDocker
-      - tag_version:
+      - codacy/tag_version:
+          context: CodacyAWS
           requires:
             - publish_versioned
 
   publish_master:
     jobs:
-      - checkout_and_compile:
+      - codacy/checkout_and_version:
           filters:
             branches:
               only: master
+      - compile:
+          requires:
+            - codacy/checkout_and_version
       - build_docker:
           requires:
-            - checkout_and_compile
+            - compile
       - publish_versioned:
           requires:
             - build_docker
@@ -140,6 +129,7 @@ workflows:
           requires:
             - publish_versioned
           context: CodacyDocker
-      - tag_version:
+      - codacy/tag_version:
+          context: CodacyAWS
           requires:
             - publish_versioned
