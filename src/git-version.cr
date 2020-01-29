@@ -14,8 +14,23 @@ module GitVersion
   MINOR_BUMP_COMMENT = "feature:"
 
   class Git
-    def initialize(@dev_branch : String, @release_branch : String = "master" , @folder = FileUtils.pwd)
+    def initialize(@dev_branch : String, @release_branch : String = "master", @patch_cmd : (String | Nil) = nil, @folder = FileUtils.pwd)
       #
+    end
+
+    private def attemptExec(cmd, ver)
+      if cmd
+        puts cmd.gsub("<version>", ver)
+        Process.run(
+          command: cmd.gsub("<version>", ver),
+          shell: true,
+          output: Process::Redirect::Close,
+          error: Process::Redirect::Close,
+          chdir: @folder
+        ).success?
+      else
+        false
+      end
     end
 
     private def exec(cmd)
@@ -155,6 +170,17 @@ module GitVersion
             latest_version.patch,
             SemanticVersion::Prerelease.new(prerelease),
             nil
+          )
+      end
+
+      while attemptExec(@patch_cmd, latest_version.to_s)
+        latest_version =
+          SemanticVersion.new(
+            latest_version.major,
+            latest_version.minor,
+            latest_version.patch + 1,
+            latest_version.prerelease,
+            latest_version.build,
           )
       end
 
