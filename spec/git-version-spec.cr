@@ -514,11 +514,49 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "v1.0.0")
 
       version = git.get_version
       version.should eq("v1.0.1")
+
+    ensure
+      tmp.cleanup
+    end
+  end
+
+  it "should properly switch from plain versioning to prefix versioning" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "v")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+      tmp.exec %(git tag "1.0.0")
+
+      version = git.get_version
+      version.should eq("v1.0.1")
+
+    ensure
+      tmp.cleanup
+    end
+  end
+
+  it "should properly manage a tag with only prefix" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "v")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+      tmp.exec %(git tag "v")
+
+      version = git.get_version
+      version.should eq("v0.0.1")
 
     ensure
       tmp.cleanup
