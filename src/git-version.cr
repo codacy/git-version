@@ -18,11 +18,11 @@ module GitVersion
       #
     end
 
-    private def version_with_prefix(version : String) : String
+    private def add_prefix(version : String) : String
       return "#{@prefix}#{version}"
     end
 
-    private def version_without_prefix(version : String) : String
+    private def strip_prefix(version : String) : String
       return version.lstrip(@prefix)
     end
 
@@ -86,7 +86,7 @@ module GitVersion
 
       branch_tags.each do |tag|
         begin
-          current_tag = SemanticVersion.parse(version_without_prefix(tag))
+          current_tag = SemanticVersion.parse(strip_prefix(tag))
           if !current_tag.prerelease.identifiers.empty?
             next
           elsif (latest_version < current_tag)
@@ -166,7 +166,7 @@ module GitVersion
           )
       end
 
-      return version_with_prefix(latest_version.to_s)
+      return add_prefix(latest_version.to_s)
     end
   end
 end
