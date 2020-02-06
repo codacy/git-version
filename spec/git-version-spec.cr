@@ -14,7 +14,7 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b #{git.release_branch})
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "1.0.0")
 
       version = git.get_version
@@ -22,7 +22,7 @@ describe GitVersion do
       version.should eq("1.0.1")
 
       tmp.exec %(git checkout -b dev)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "2")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
 
       tag_on_master = git.tags_by_branch("#{git.release_branch}")
 
@@ -54,11 +54,11 @@ describe GitVersion do
     begin
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "1.0.0")
 
       tmp.exec %(git checkout -b my-fancy.branch)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "2")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
 
       git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
@@ -79,14 +79,14 @@ describe GitVersion do
     begin
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "1.0.0")
 
       tmp.exec %(git checkout -b dev)
 
       git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
 
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: XYZ")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: XYZ")
 
       hash = git.current_commit_hash
 
@@ -94,7 +94,7 @@ describe GitVersion do
 
       version.should eq("2.0.0-SNAPSHOT.#{hash}")
 
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: XYZ")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: XYZ")
 
       hash = git.current_commit_hash
 
@@ -102,7 +102,7 @@ describe GitVersion do
 
       version.should eq("2.0.0-SNAPSHOT.#{hash}")
 
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "feature: XYZ")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "feature: XYZ")
 
       hash = git.current_commit_hash
 
@@ -123,13 +123,13 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "1.0.0")
 
       tmp.exec %(git checkout -b my-fancy.branch)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "2")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
 
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: XYZ")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: XYZ")
 
       tmp.exec %(git checkout master)
 
@@ -146,7 +146,7 @@ describe GitVersion do
       tmp.exec %(git tag "2.0.0")
 
       tmp.exec %(git checkout -b my-fancy.branch2)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: ABC")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: ABC")
       tmp.exec %(git checkout master)
 
       version = git.get_version
@@ -162,7 +162,7 @@ describe GitVersion do
       tmp.exec %(git tag "3.0.0")
 
       tmp.exec %(git checkout -b my-fancy.branch3)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "feature: 123")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "feature: 123")
       tmp.exec %(git checkout master)
 
       version = git.get_version
@@ -188,7 +188,7 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "1.0.0")
 
       tmp.exec %(# Checkout to dev)
@@ -196,8 +196,8 @@ describe GitVersion do
 
       # Checkout to FT-1111 from dev and add a commit)
       tmp.exec %(git checkout -b FT-1111)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "3")
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "4")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "3")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "4")
 
       hash = git.current_commit_hash
 
@@ -218,7 +218,7 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
 
       version = git.get_version
 
@@ -237,13 +237,13 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "2")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
       tmp.exec %(git tag "1.1.0")
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "3")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "3")
       tmp.exec %(git tag "1.2.0")
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "4")
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "5")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "4")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "5")
 
       version = git.get_version
 
@@ -262,17 +262,17 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "1.0.0")
       tmp.exec %(git checkout -b feature1)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "feature: 2")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "feature: 2")
       hash = git.current_commit_hash
       version = git.get_version
       version.should eq("1.1.0-feature1.#{hash}")
 
       tmp.exec %(git checkout master)
       tmp.exec %(git checkout -b feature2)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: 3")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: 3")
       hash = git.current_commit_hash
       version = git.get_version
       version.should eq("2.0.0-feature2.#{hash}")
@@ -284,7 +284,7 @@ describe GitVersion do
       tmp.exec %(git tag "2.0.0")
 
       tmp.exec %(git checkout -b feature3)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "4")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "4")
       hash = git.current_commit_hash
       version = git.get_version
       version.should eq("2.0.1-feature3.#{hash}")
@@ -313,16 +313,16 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "1.0.0")
       tmp.exec %(git checkout -b dev)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "2")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
       hash = git.current_commit_hash
       version = git.get_version
       version.should eq("1.0.1-SNAPSHOT.#{hash}")
 
       tmp.exec %(git checkout -b myfeature)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "3")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "3")
       tmp.exec %(git checkout dev)
       tmp.exec %(git merge myfeature)
 
@@ -344,22 +344,22 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "1.0.0")
       tmp.exec %(git checkout -b dev)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: 2")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: 2")
 
       tmp.exec %(git checkout master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "3")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "3")
 
       tmp.exec %(git checkout dev)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "4")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "4")
       tmp.exec %(git rebase master)
 
       tmp.exec %(git checkout master)
       tmp.exec %(git merge --no-gpg-sign --no-ff dev)
       # e.g. commit added when merging by bitbucket, no easy way to produce it automatically...
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "Merged xyz (123) breaking:")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "Merged xyz (123) breaking:")
 
       version = git.get_version
       version.should eq("2.0.0")
@@ -377,10 +377,10 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "1.0.0")
       tmp.exec %(git checkout -b dev)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: 2")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: 2")
 
       version = git.get_version
       hash = git.current_commit_hash
@@ -406,10 +406,10 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "1.0.0")
       tmp.exec %(git checkout -b dev)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "2")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
 
       version = git.get_version
       hash = git.current_commit_hash
@@ -435,9 +435,9 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "0.1.0")
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m ":breaking: 2")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m ":breaking: 2")
 
       version = git.get_version
       version.should eq("1.0.0")
@@ -455,9 +455,9 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "0.1.0-asd")
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m ":breaking: 2")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m ":breaking: 2")
 
       version = git.get_version
       version.should eq("1.0.0")
@@ -475,7 +475,7 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: 1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: 1")
 
       version = git.get_version
       version.should eq("1.0.0")
@@ -493,7 +493,7 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: 1")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: 1")
       tmp.exec %(git tag v1)
       tmp.exec %(git checkout v1)
 
