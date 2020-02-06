@@ -5,8 +5,8 @@ require "semantic_version"
 module GitVersion
   extend self
 
-  BASE_VERISON_STRING = "0.0.0"
-  BASE_VERISON        = SemanticVersion.parse(BASE_VERISON_STRING)
+  BASE_VERSION_STRING = "0.0.0"
+  BASE_VERSION        = SemanticVersion.parse(BASE_VERSION_STRING)
 
   DEV_BRANCH_SUFFIX = "SNAPSHOT"
 
@@ -14,8 +14,16 @@ module GitVersion
   MINOR_BUMP_COMMENT = "feature:"
 
   class Git
-    def initialize(@dev_branch : String, @release_branch : String = "master" , @folder = FileUtils.pwd)
+    def initialize(@dev_branch : String, @release_branch : String = "master", @folder = FileUtils.pwd, @prefix : String = "")
       #
+    end
+
+    private def version_with_prefix(version : String) : String
+      return "#{@prefix}#{version}"
+    end
+
+    private def version_without_prefix(version : String) : String
+      return version.lstrip(@prefix)
     end
 
     private def exec(cmd)
@@ -74,11 +82,11 @@ module GitVersion
 
       branch_tags = tags_by_branch(cb)
 
-      latest_version = BASE_VERISON
+      latest_version = BASE_VERSION
 
       branch_tags.each do |tag|
         begin
-          current_tag = SemanticVersion.parse(tag)
+          current_tag = SemanticVersion.parse(version_without_prefix(tag))
           if !current_tag.prerelease.identifiers.empty?
             next
           elsif (latest_version < current_tag)
@@ -158,7 +166,7 @@ module GitVersion
           )
       end
 
-      return latest_version.to_s
+      return version_with_prefix(latest_version.to_s)
     end
   end
 end
