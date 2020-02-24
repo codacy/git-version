@@ -42,7 +42,6 @@ describe GitVersion do
       tmp.exec %(touch file2.txt)
       tmp.exec %(git add file2.txt)
       tmp.exec %(git commit --no-gpg-sign -m "new file2.txt")
-
     ensure
       tmp.cleanup
     end
@@ -67,7 +66,6 @@ describe GitVersion do
       version = git.get_version
 
       version.should eq("1.0.1-myfancybranch.#{hash}")
-
     ensure
       tmp.cleanup
     end
@@ -109,7 +107,6 @@ describe GitVersion do
       version = git.get_version
 
       version.should eq("2.0.0-SNAPSHOT.#{hash}")
-
     ensure
       tmp.cleanup
     end
@@ -174,7 +171,6 @@ describe GitVersion do
       version = git.get_version
 
       version.should eq("3.1.0")
-
     ensure
       tmp.cleanup
     end
@@ -204,7 +200,6 @@ describe GitVersion do
       version = git.get_version
 
       version.should eq("1.0.1-ft1111.#{hash}")
-
     ensure
       tmp.cleanup
     end
@@ -223,7 +218,6 @@ describe GitVersion do
       version = git.get_version
 
       version.should eq("0.0.1")
-
     ensure
       tmp.cleanup
     end
@@ -248,7 +242,6 @@ describe GitVersion do
       version = git.get_version
 
       version.should eq("1.2.1")
-
     ensure
       tmp.cleanup
     end
@@ -299,7 +292,6 @@ describe GitVersion do
       version = git.get_version
       version.should eq("2.1.1")
       tmp.exec %(git tag "2.1.1")
-
     ensure
       tmp.cleanup
     end
@@ -330,7 +322,6 @@ describe GitVersion do
       tmp.exec %(git rebase dev)
       version = git.get_version
       version.should eq("1.0.1")
-
     ensure
       tmp.cleanup
     end
@@ -363,7 +354,6 @@ describe GitVersion do
 
       version = git.get_version
       version.should eq("2.0.0")
-
     ensure
       tmp.cleanup
     end
@@ -392,7 +382,6 @@ describe GitVersion do
 
       version = git.get_version
       version.should eq("2.0.0")
-
     ensure
       tmp.cleanup
     end
@@ -421,7 +410,6 @@ describe GitVersion do
 
       version = git.get_version
       version.should eq("1.0.1")
-
     ensure
       tmp.cleanup
     end
@@ -441,7 +429,6 @@ describe GitVersion do
 
       version = git.get_version
       version.should eq("1.0.0")
-
     ensure
       tmp.cleanup
     end
@@ -461,7 +448,6 @@ describe GitVersion do
 
       version = git.get_version
       version.should eq("1.0.0")
-
     ensure
       tmp.cleanup
     end
@@ -479,7 +465,6 @@ describe GitVersion do
 
       version = git.get_version
       version.should eq("1.0.0")
-
     ensure
       tmp.cleanup
     end
@@ -500,7 +485,6 @@ describe GitVersion do
       version = git.get_version
       hash = git.current_commit_hash
       version.should eq("1.0.0-v1.#{hash}")
-
     ensure
       tmp.cleanup
     end
@@ -517,7 +501,6 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign --allow-empty --no-gpg-sign -m "breaking: 1")
 
       version = git.get_version
-      hash = git.current_commit_hash
       version.should eq("1.0.1")
     ensure
       tmp.cleanup

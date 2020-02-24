@@ -18,7 +18,7 @@ module GitVersion
       #
     end
 
-    private def attemptExec(cmd, ver)
+    private def attempt_exec(cmd, ver)
       if cmd
         puts cmd.gsub("<version>", ver)
         Process.run(
@@ -173,7 +173,7 @@ module GitVersion
           )
       end
 
-      while attemptExec(@patch_cmd, latest_version.to_s)
+      while attempt_exec(@patch_cmd, latest_version.to_s)
         latest_version =
           SemanticVersion.new(
             latest_version.major,
