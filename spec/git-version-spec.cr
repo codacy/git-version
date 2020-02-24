@@ -525,7 +525,7 @@ describe GitVersion do
     end
   end
 
-  it "should properly switch from plain versioning to prefix versioning" do
+  it "non-prefixed tags should be ignored if prefix is enabled" do
     tmp = InTmp.new
 
     begin
@@ -537,7 +537,7 @@ describe GitVersion do
       tmp.exec %(git tag "1.0.0")
 
       version = git.get_version
-      version.should eq("v1.0.1")
+      version.should eq("v0.0.1")
 
     ensure
       tmp.cleanup

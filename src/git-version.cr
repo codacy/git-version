@@ -86,7 +86,11 @@ module GitVersion
 
       branch_tags.each do |tag|
         begin
-          current_tag = SemanticVersion.parse(strip_prefix(tag))
+          tag_without_prefix = strip_prefix(tag)
+          if @prefix != "" && tag_without_prefix == tag
+            next
+          end
+          current_tag = SemanticVersion.parse(tag_without_prefix)
           if !current_tag.prerelease.identifiers.empty?
             next
           elsif (latest_version < current_tag)
