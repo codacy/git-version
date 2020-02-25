@@ -22,8 +22,13 @@ module GitVersion
       return "#{@prefix}#{version}"
     end
 
-    private def strip_prefix(version : String) : String
-      return version.lstrip(@prefix)
+    private def strip_prefix(version : String) : String | Nil
+      stripped = version.lstrip(@prefix)
+      if @prefix != "" && stripped.size == version.size
+        nil
+      else
+        stripped
+      end
     end
 
     private def exec(cmd)
@@ -87,7 +92,7 @@ module GitVersion
       branch_tags.each do |tag|
         begin
           tag_without_prefix = strip_prefix(tag)
-          if @prefix != "" && tag_without_prefix == tag
+          if tag_without_prefix.nil?
             next
           end
           current_tag = SemanticVersion.parse(tag_without_prefix)
