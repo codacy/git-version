@@ -1,5 +1,6 @@
 CRYSTAL?=$(shell which crystal)
 CRYSTAL_FLAGS=--release
+CRYSTAL_STATIC_FLAGS=--static --no-debug
 
 VERSION?=$(shell ./bin/git-version)
 
@@ -20,7 +21,7 @@ build: ## compiles from crystal sources
 .PHONY: buildStatic
 buildStatic: ## compiles from crystal sources into static binary
 	mkdir -p bin
-	docker run --rm -it -v $(PWD):/app -w /app durosoft/crystal-alpine:latest crystal build src/env2props.cr -o bin/env2props --release --static --no-debug
+	docker run --rm -it -v $(PWD):/app -w /app durosoft/crystal-alpine:latest crystal build $(CRYSTAL_FLAGS) $(CRYSTAL_STATIC_FLAGS) src/entrypoint/git-version.cr -o bin/git-version
 
 .PHONY: docker
 docker: build docker_build ## compiles from sources and produce the docker image
