@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@1.2.1
+  codacy: codacy/base@2.5.0
 
 # Re-usable blocks to reduce boilerplate in job definitions.
 references:
@@ -13,7 +13,7 @@ references:
     run:
       name: Define Environment Variable VERSION and ENV at Runtime
       command: |
-        echo export VERSION=$(cat ~/workdir/.version) >> $BASH_ENV
+        echo export VERSION=$(cat .version) >> $BASH_ENV
         source $BASH_ENV
         echo $VERSION
 
@@ -22,7 +22,7 @@ jobs:
     <<: *default_machine_job
     steps:
       - attach_workspace:
-          at: ~/
+          at: ~/workdir
       - run:
           name: Get version
           command: |
@@ -32,16 +32,16 @@ jobs:
             sudo dpkg -i crystal_0.30.1-1_amd64.deb
             sudo make clean test build
       - persist_to_workspace:
-          root: ~/
+          root: ~/workdir
           paths:
-            - workdir/*
+            - "*"
       - store_artifacts:
           path: bin
   build_docker:
     <<: *default_machine_job
     steps:
       - attach_workspace:
-          at: ~/
+          at: ~/workdir
       - *set_version_env_variable
       - run:
           name: Build Docker image
@@ -51,39 +51,25 @@ jobs:
           command: |
             docker save --output docker-image.tar codacy/git-version:$VERSION
       - persist_to_workspace:
-          root: ~/
+          root: ~/workdir
           paths:
-            - workdir/docker-image.tar
+            - docker-image.tar
 
   build_static:
     <<: *default_machine_job
     steps:
       - attach_workspace:
-          at: ~/
+          at: ~/workdir
       - *set_version_env_variable
       - run:
           name: Compile
           command: make clean buildStatic
       - persist_to_workspace:
-          root: ~/
+          root: ~/workdir
           paths:
-            - workdir/*
+            - "*"
       - store_artifacts:
           path: bin
-
-  publish-github-release:
-    docker:
-      - image: circleci/golang:1.8
-    working_directory: ~/workdir
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: "Publish Release on GitHub"
-          command: |
-            go get github.com/tcnksm/ghr
-            VERSION=$(cat ~/workdir/.version)
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ~/workdir/bin/
 
   publish_versioned:
     <<: *default_machine_job
@@ -91,7 +77,7 @@ jobs:
       PROJECT_NAME: $CIRCLE_PROJECT_REPONAME
     steps:
       - attach_workspace:
-          at: ~/
+          at: ~/workdir
       - run:
           name: Load docker from file
           command: docker load --input docker-image.tar
@@ -103,7 +89,7 @@ jobs:
     <<: *default_machine_job
     steps:
       - attach_workspace:
-          at: ~/
+          at: ~/workdir
       - *set_version_env_variable
       - run:
           name: Load docker from file
@@ -151,7 +137,8 @@ workflows:
       - build_static:
           requires:
             - compile
-      - publish-github-release:
+      - codacy/publish_ghr:
+          path: bin/
           requires:
             - build_static
           context: CodacyAWS
