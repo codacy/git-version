@@ -138,7 +138,7 @@ workflows:
           requires:
             - compile
       - codacy/publish_ghr:
-          path: bin/
+          path: ~/workdir/bin/
           requires:
             - build_static
           context: CodacyAWS
