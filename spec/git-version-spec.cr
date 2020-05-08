@@ -36,13 +36,12 @@ describe GitVersion do
 
       version = git.get_version
 
-      version.should eq("1.0.1-SNAPSHOT.#{hash}")
+      version.should eq("1.0.1-SNAPSHOT#{hash}")
 
       tmp.exec %(git checkout -b feature-branch)
       tmp.exec %(touch file2.txt)
       tmp.exec %(git add file2.txt)
       tmp.exec %(git commit --no-gpg-sign -m "new file2.txt")
-
     ensure
       tmp.cleanup
     end
@@ -66,8 +65,7 @@ describe GitVersion do
 
       version = git.get_version
 
-      version.should eq("1.0.1-myfancybranch.#{hash}")
-
+      version.should eq("1.0.1-myfancybranch#{hash}")
     ensure
       tmp.cleanup
     end
@@ -92,7 +90,7 @@ describe GitVersion do
 
       version = git.get_version
 
-      version.should eq("2.0.0-SNAPSHOT.#{hash}")
+      version.should eq("2.0.0-SNAPSHOT#{hash}")
 
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: XYZ")
 
@@ -100,7 +98,7 @@ describe GitVersion do
 
       version = git.get_version
 
-      version.should eq("2.0.0-SNAPSHOT.#{hash}")
+      version.should eq("2.0.0-SNAPSHOT#{hash}")
 
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "feature: XYZ")
 
@@ -108,8 +106,7 @@ describe GitVersion do
 
       version = git.get_version
 
-      version.should eq("2.0.0-SNAPSHOT.#{hash}")
-
+      version.should eq("2.0.0-SNAPSHOT#{hash}")
     ensure
       tmp.cleanup
     end
@@ -174,7 +171,6 @@ describe GitVersion do
       version = git.get_version
 
       version.should eq("3.1.0")
-
     ensure
       tmp.cleanup
     end
@@ -203,8 +199,7 @@ describe GitVersion do
 
       version = git.get_version
 
-      version.should eq("1.0.1-ft1111.#{hash}")
-
+      version.should eq("1.0.1-ft1111#{hash}")
     ensure
       tmp.cleanup
     end
@@ -223,7 +218,6 @@ describe GitVersion do
       version = git.get_version
 
       version.should eq("0.0.1")
-
     ensure
       tmp.cleanup
     end
@@ -248,7 +242,6 @@ describe GitVersion do
       version = git.get_version
 
       version.should eq("1.2.1")
-
     ensure
       tmp.cleanup
     end
@@ -268,14 +261,14 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "feature: 2")
       hash = git.current_commit_hash
       version = git.get_version
-      version.should eq("1.1.0-feature1.#{hash}")
+      version.should eq("1.1.0-feature1#{hash}")
 
       tmp.exec %(git checkout master)
       tmp.exec %(git checkout -b feature2)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: 3")
       hash = git.current_commit_hash
       version = git.get_version
-      version.should eq("2.0.0-feature2.#{hash}")
+      version.should eq("2.0.0-feature2#{hash}")
 
       tmp.exec %(git checkout master)
       tmp.exec %(git merge feature2)
@@ -287,7 +280,7 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "4")
       hash = git.current_commit_hash
       version = git.get_version
-      version.should eq("2.0.1-feature3.#{hash}")
+      version.should eq("2.0.1-feature3#{hash}")
 
       tmp.exec %(git checkout master)
       tmp.exec %(git merge --no-gpg-sign feature1)
@@ -299,7 +292,6 @@ describe GitVersion do
       version = git.get_version
       version.should eq("2.1.1")
       tmp.exec %(git tag "2.1.1")
-
     ensure
       tmp.cleanup
     end
@@ -319,7 +311,7 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
       hash = git.current_commit_hash
       version = git.get_version
-      version.should eq("1.0.1-SNAPSHOT.#{hash}")
+      version.should eq("1.0.1-SNAPSHOT#{hash}")
 
       tmp.exec %(git checkout -b myfeature)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "3")
@@ -330,7 +322,6 @@ describe GitVersion do
       tmp.exec %(git rebase dev)
       version = git.get_version
       version.should eq("1.0.1")
-
     ensure
       tmp.cleanup
     end
@@ -363,7 +354,6 @@ describe GitVersion do
 
       version = git.get_version
       version.should eq("2.0.0")
-
     ensure
       tmp.cleanup
     end
@@ -385,14 +375,13 @@ describe GitVersion do
       version = git.get_version
       hash = git.current_commit_hash
       tmp.exec %(git tag "#{version}")
-      version.should eq("2.0.0-SNAPSHOT.#{hash}")
+      version.should eq("2.0.0-SNAPSHOT#{hash}")
 
       tmp.exec %(git checkout master)
       tmp.exec %(git merge --no-gpg-sign --no-ff dev)
 
       version = git.get_version
       version.should eq("2.0.0")
-
     ensure
       tmp.cleanup
     end
@@ -414,14 +403,13 @@ describe GitVersion do
       version = git.get_version
       hash = git.current_commit_hash
       tmp.exec %(git tag "#{version}")
-      version.should eq("1.0.1-SNAPSHOT.#{hash}")
+      version.should eq("1.0.1-SNAPSHOT#{hash}")
 
       tmp.exec %(git checkout master)
       tmp.exec %(git merge --no-gpg-sign --no-ff dev)
 
       version = git.get_version
       version.should eq("1.0.1")
-
     ensure
       tmp.cleanup
     end
@@ -441,7 +429,6 @@ describe GitVersion do
 
       version = git.get_version
       version.should eq("1.0.0")
-
     ensure
       tmp.cleanup
     end
@@ -461,7 +448,6 @@ describe GitVersion do
 
       version = git.get_version
       version.should eq("1.0.0")
-
     ensure
       tmp.cleanup
     end
@@ -479,7 +465,6 @@ describe GitVersion do
 
       version = git.get_version
       version.should eq("1.0.0")
-
     ensure
       tmp.cleanup
     end
@@ -499,8 +484,7 @@ describe GitVersion do
 
       version = git.get_version
       hash = git.current_commit_hash
-      version.should eq("1.0.0-v1.#{hash}")
-
+      version.should eq("1.0.0-v1#{hash}")
     ensure
       tmp.cleanup
     end
@@ -519,7 +503,6 @@ describe GitVersion do
 
       version = git.get_version
       version.should eq("v1.0.1")
-
     ensure
       tmp.cleanup
     end
@@ -538,7 +521,6 @@ describe GitVersion do
 
       version = git.get_version
       version.should eq("v0.0.1")
-
     ensure
       tmp.cleanup
     end
@@ -557,7 +539,6 @@ describe GitVersion do
 
       version = git.get_version
       version.should eq("v0.0.1")
-
     ensure
       tmp.cleanup
     end

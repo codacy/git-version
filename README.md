@@ -68,23 +68,23 @@ _Example:_
 ```
 ---A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 1.0.2)
             \                             /
-             D---E---F---G---H---I---J---K <= Foo (git-version: 1.0.2-foo.5e30d83)
+             D---E---F---G---H---I---J---K <= Foo (git-version: 1.0.2-foo5e30d83)
 ```
 
 _Example2 (with dev branch):_
 ```
 ---A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 1.0.2)
             \                             / <= Fast-forward merges to master (same commit id)
-             C                           L <= Dev (git-version: 1.0.2-SNAPSHOT.5e30d83)
+             C                           L <= Dev (git-version: 1.0.2-SNAPSHOT5e30d83)
               \                         /
-               E---F---G---H---I---J---K <= Foo (new_version: 1.0.1-foo.5e30d83)
+               E---F---G---H---I---J---K <= Foo (new_version: 1.0.1-foo5e30d83)
 ```
 
 _Example3 (with breaking message):_
 ```
 ---A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 2.0.0)
             \                             /
-             D---E---F---G---H---I---J---K <= Foo (git-version: 2.0.0-foo.5e30d83)
+             D---E---F---G---H---I---J---K <= Foo (git-version: 2.0.0-foo5e30d83)
                                          \\
                                          message: "breaking: removed api parameter"
 ```

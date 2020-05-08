@@ -154,7 +154,7 @@ module GitVersion
       if cb == @release_branch
         #
       elsif cb == @dev_branch
-        prerelease = [DEV_BRANCH_SUFFIX, current_commit_hash()] of String | Int32
+        prerelease = ["#{DEV_BRANCH_SUFFIX}#{current_commit_hash()}"] of String | Int32
         latest_version =
           SemanticVersion.new(
             latest_version.major,
@@ -164,7 +164,7 @@ module GitVersion
             nil
           )
       else
-        prerelease = [cb.downcase.gsub(/[^a-zA-Z0-9]/, ""), current_commit_hash()] of String | Int32
+        prerelease = ["#{cb.downcase.gsub(/[^a-zA-Z0-9]/, "")}#{current_commit_hash()}"] of String | Int32
         latest_version =
           SemanticVersion.new(
             latest_version.major,
