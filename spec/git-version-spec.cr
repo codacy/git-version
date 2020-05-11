@@ -544,7 +544,7 @@ describe GitVersion do
     end
   end
 
-  it "should count the commits dinstance" do
+  it "should count the commits distance" do
     tmp = InTmp.new
 
     begin
