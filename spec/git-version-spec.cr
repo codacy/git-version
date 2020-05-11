@@ -65,7 +65,7 @@ describe GitVersion do
 
       version = git.get_version
 
-      version.should eq("1.0.1-myfancybranch.2.#{hash}")
+      version.should eq("1.0.1-myfancybranch.1.#{hash}")
     ensure
       tmp.cleanup
     end
@@ -199,7 +199,7 @@ describe GitVersion do
 
       version = git.get_version
 
-      version.should eq("1.0.1-ft1111.3.#{hash}")
+      version.should eq("1.0.1-ft1111.2.#{hash}")
     ensure
       tmp.cleanup
     end
@@ -261,14 +261,14 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "feature: 2")
       hash = git.current_commit_hash
       version = git.get_version
-      version.should eq("1.1.0-feature1.2.#{hash}")
+      version.should eq("1.1.0-feature1.1.#{hash}")
 
       tmp.exec %(git checkout master)
       tmp.exec %(git checkout -b feature2)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: 3")
       hash = git.current_commit_hash
       version = git.get_version
-      version.should eq("2.0.0-feature2.2.#{hash}")
+      version.should eq("2.0.0-feature2.1.#{hash}")
 
       tmp.exec %(git checkout master)
       tmp.exec %(git merge feature2)
@@ -280,7 +280,7 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "4")
       hash = git.current_commit_hash
       version = git.get_version
-      version.should eq("2.0.1-feature3.3.#{hash}")
+      version.should eq("2.0.1-feature3.1.#{hash}")
 
       tmp.exec %(git checkout master)
       tmp.exec %(git merge --no-gpg-sign feature1)
@@ -484,7 +484,7 @@ describe GitVersion do
 
       version = git.get_version
       hash = git.current_commit_hash
-      version.should eq("1.0.0-v1.1.#{hash}")
+      version.should eq("1.0.0-v1.0.#{hash}")
     ensure
       tmp.cleanup
     end
@@ -559,7 +559,7 @@ describe GitVersion do
 
       version = git.get_version
       hash = git.current_commit_hash
-      version.should eq("1.0.0-v1.3.#{hash}")
+      version.should eq("1.0.0-v1.0.#{hash}")
     ensure
       tmp.cleanup
     end

@@ -71,7 +71,13 @@ module GitVersion
     end
 
     def commits_distance
-      return (exec "git rev-list --count HEAD")[0]
+      return (exec "git rev-list --count HEAD ^#{@dev_branch}")[0]
+    rescue
+      begin
+        return (exec "git rev-list --count HEAD ^#{@release_branch}")[0]
+      rescue
+        return 0
+      end
     end
 
     def get_bumps(latest)
