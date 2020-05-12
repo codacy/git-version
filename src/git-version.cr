@@ -70,6 +70,12 @@ module GitVersion
       return (exec cmd)[0].rjust(7, '0')
     end
 
+    def commits_distance(latest_tagged_version)
+      return (exec "git rev-list --count HEAD ^#{latest_tagged_version}")[0]
+    rescue
+      return 0
+    end
+
     def get_bumps(latest)
       latest_exists = (exec "git tag -l #{latest}")
       if latest_exists.any?
@@ -164,7 +170,8 @@ module GitVersion
             nil
           )
       else
-        prerelease = [cb.downcase.gsub(/[^a-zA-Z0-9]/, ""), current_commit_hash()] of String | Int32
+        branch_sanitized_name = cb.downcase.gsub(/[^a-zA-Z0-9]/, "")
+        prerelease = [branch_sanitized_name, commits_distance(latest_tagged_version), current_commit_hash()] of String | Int32
         latest_version =
           SemanticVersion.new(
             latest_version.major,
