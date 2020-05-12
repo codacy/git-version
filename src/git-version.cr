@@ -160,7 +160,7 @@ module GitVersion
       if cb == @release_branch
         #
       elsif cb == @dev_branch
-        prerelease = [DEV_BRANCH_SUFFIX, current_commit_hash()] of String | Int32
+        prerelease = [DEV_BRANCH_SUFFIX, commits_distance(latest_tagged_version), current_commit_hash()] of String | Int32
         latest_version =
           SemanticVersion.new(
             latest_version.major,

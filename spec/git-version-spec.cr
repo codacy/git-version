@@ -36,7 +36,7 @@ describe GitVersion do
 
       version = git.get_version
 
-      version.should eq("1.0.1-SNAPSHOT.#{hash}")
+      version.should eq("1.0.1-SNAPSHOT.1.#{hash}")
 
       tmp.exec %(git checkout -b feature-branch)
       tmp.exec %(touch file2.txt)
@@ -90,7 +90,7 @@ describe GitVersion do
 
       version = git.get_version
 
-      version.should eq("2.0.0-SNAPSHOT.#{hash}")
+      version.should eq("2.0.0-SNAPSHOT.1.#{hash}")
 
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: XYZ")
 
@@ -98,7 +98,7 @@ describe GitVersion do
 
       version = git.get_version
 
-      version.should eq("2.0.0-SNAPSHOT.#{hash}")
+      version.should eq("2.0.0-SNAPSHOT.2.#{hash}")
 
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "feature: XYZ")
 
@@ -106,7 +106,7 @@ describe GitVersion do
 
       version = git.get_version
 
-      version.should eq("2.0.0-SNAPSHOT.#{hash}")
+      version.should eq("2.0.0-SNAPSHOT.3.#{hash}")
     ensure
       tmp.cleanup
     end
@@ -311,7 +311,7 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
       hash = git.current_commit_hash
       version = git.get_version
-      version.should eq("1.0.1-SNAPSHOT.#{hash}")
+      version.should eq("1.0.1-SNAPSHOT.1.#{hash}")
 
       tmp.exec %(git checkout -b myfeature)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "3")
@@ -375,7 +375,7 @@ describe GitVersion do
       version = git.get_version
       hash = git.current_commit_hash
       tmp.exec %(git tag "#{version}")
-      version.should eq("2.0.0-SNAPSHOT.#{hash}")
+      version.should eq("2.0.0-SNAPSHOT.1.#{hash}")
 
       tmp.exec %(git checkout master)
       tmp.exec %(git merge --no-gpg-sign --no-ff dev)
@@ -403,7 +403,7 @@ describe GitVersion do
       version = git.get_version
       hash = git.current_commit_hash
       tmp.exec %(git tag "#{version}")
-      version.should eq("1.0.1-SNAPSHOT.#{hash}")
+      version.should eq("1.0.1-SNAPSHOT.1.#{hash}")
 
       tmp.exec %(git checkout master)
       tmp.exec %(git merge --no-gpg-sign --no-ff dev)
