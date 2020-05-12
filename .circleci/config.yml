@@ -21,8 +21,7 @@ jobs:
   compile:
     <<: *default_machine_job
     steps:
-      - attach_workspace:
-          at: ~/workdir
+      - checkout
       - run:
           name: Get version
           command: |
