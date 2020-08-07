@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - name: Start workflow if GitHub issue is tagged with JIRA_ISSUE_LABEL
+        if: github.event.label.name == env.JIRA_ISSUE_LABEL
+        run: echo "Starting workflow"
+
       - name: Jira Login
         if: github.event.label.name == env.JIRA_ISSUE_LABEL
         id: login
@@ -35,7 +39,7 @@ jobs:
             _[Github permalink |${{ github.event.issue.html_url }}]_
             {panel}
 
-      - name: Update Jira issue
+      - name: Update Jira issue if JIRA_UPDATE_ISSUE_BODY is defined
         if: github.event.label.name == env.JIRA_ISSUE_LABEL && env.JIRA_UPDATE_ISSUE_BODY != ''
         env:
           JIRA_UPDATE_ISSUE_BODY: ${{ secrets.JIRA_UPDATE_ISSUE_BODY }}
@@ -76,4 +80,3 @@ jobs:
               repo: context.repo.repo,
               body: 'Internal ticket created : [${{ steps.create_jira_issue.outputs.issue }}](${{ secrets.JIRA_BASE_URL }}/browse/${{ steps.create_jira_issue.outputs.issue }})'
             })
-

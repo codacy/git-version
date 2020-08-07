@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - name: Start workflow if JIRA_CREATE_ISSUE_AUTO is enabled
+        if: env.JIRA_CREATE_ISSUE_AUTO == 'true'
+        run: echo "Starting workflow"
+
       - name: Jira Login
         if: env.JIRA_CREATE_ISSUE_AUTO == 'true'
         id: login
@@ -35,7 +39,7 @@ jobs:
             _[Github permalink |${{ github.event.issue.html_url }}]_
             {panel}
 
-      - name: Update Jira issue
+      - name: Update Jira issue if JIRA_UPDATE_ISSUE_BODY is defined
         if: env.JIRA_CREATE_ISSUE_AUTO == 'true' && env.JIRA_UPDATE_ISSUE_BODY != ''
         env:
           JIRA_UPDATE_ISSUE_BODY: ${{ secrets.JIRA_UPDATE_ISSUE_BODY }}
