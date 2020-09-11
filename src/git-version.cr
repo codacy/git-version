@@ -67,7 +67,8 @@ module GitVersion
 
     def current_commit_hash : String
       cmd = "git rev-parse --verify HEAD --short"
-      return (exec cmd)[0].rjust(7, '0')
+      sha = (exec cmd)[0].rjust(7, '0')
+      return "SHA" + sha
     end
 
     def commits_distance(latest_tagged_version)
