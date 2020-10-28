@@ -82,7 +82,7 @@ jobs:
       - name: Jira Add comment on issue
         if: env.JIRA_CREATE_COMMENT_AUTO == 'true' && env.GITHUB_ISSUE_TYPE == 'issue' && env.GITHUB_ISSUE_HAS_JIRA_ISSUE_LABEL == 'true'
         id: add_comment_jira_issue
-        uses: atlassian/gajira-comment@v2.0.0
+        uses: atlassian/gajira-comment@v2.0.2
         env:
           GITHUB_ISSUE_TYPE: ${{ steps.github_issue_type.outputs.result }}
           GITHUB_ISSUE_HAS_JIRA_ISSUE_LABEL: ${{ steps.github_issue_has_jira_issue_label.outputs.result }}

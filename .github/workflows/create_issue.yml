@@ -27,7 +27,7 @@ jobs:
       - name: Jira Create issue
         if: env.JIRA_CREATE_ISSUE_AUTO == 'true'
         id: create_jira_issue
-        uses: atlassian/gajira-create@v2.0.0
+        uses: atlassian/gajira-create@v2.0.1
         with:
           project: ${{ secrets.JIRA_PROJECT }}
           issuetype: ${{ secrets.JIRA_ISSUE_TYPE }}
