@@ -27,7 +27,7 @@ jobs:
       - name: Jira Create issue
         if: github.event.label.name == env.JIRA_ISSUE_LABEL
         id: create_jira_issue
-        uses: atlassian/gajira-create@v2.0.0
+        uses: atlassian/gajira-create@v2.0.1
         with:
           project: ${{ secrets.JIRA_PROJECT }}
           issuetype: ${{ secrets.JIRA_ISSUE_TYPE }}
