@@ -16,12 +16,12 @@ fmt: ## format the crystal sources
 
 build: ## compiles from crystal sources
 	mkdir -p bin
-	$(CRYSTAL) build $(CRYSTAL_FLAGS) src/entrypoint/git-version.cr -o bin/git-version
+	$(CRYSTAL) build $(CRYSTAL_FLAGS) src/main.cr -o bin/git-version
 
 .PHONY: buildStatic
 buildStatic: ## compiles from crystal sources into static binary
 	mkdir -p bin
-	docker run --rm -it -v $(PWD):/app -w /app durosoft/crystal-alpine:latest crystal build $(CRYSTAL_FLAGS) $(CRYSTAL_STATIC_FLAGS) src/entrypoint/git-version.cr -o bin/git-version
+	docker run --rm -it -v $(PWD):/app -w /app durosoft/crystal-alpine:latest crystal build $(CRYSTAL_FLAGS) $(CRYSTAL_STATIC_FLAGS) src/main.cr -o bin/git-version
 
 .PHONY: docker
 docker: build docker_build ## compiles from sources and produce the docker image

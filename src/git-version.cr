@@ -14,7 +14,8 @@ module GitVersion
   MINOR_BUMP_COMMENT = "feature:"
 
   class Git
-    def initialize(@dev_branch : String, @release_branch : String = "master", @folder = FileUtils.pwd, @prefix : String = "")
+    def initialize(@dev_branch : String, @release_branch : String = "master",
+                   @folder = FileUtils.pwd, @prefix : String = "", @log_path : String = "")
       #
     end
 
@@ -51,6 +52,10 @@ module GitVersion
       return @dev_branch
     end
 
+    def log_path_filter
+      return "-- #{@log_path}"
+    end
+
     def release_branch
       return @release_branch
     end
@@ -80,7 +85,7 @@ module GitVersion
       latest_exists = (exec "git tag -l #{latest}")
       if latest_exists.any?
         last_commit = (exec "git show-ref -s #{latest}")[0]
-        return (exec "git log --pretty=%B #{last_commit}..HEAD")
+        return (exec "git log --pretty=%B #{last_commit}..HEAD #{log_path_filter}")
       else
         return (exec "git log --pretty=%B")
       end

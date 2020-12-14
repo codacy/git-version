@@ -564,4 +564,81 @@ describe GitVersion do
       tmp.cleanup
     end
   end
+
+  it "ignore non log-path filtered breaking messages" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "", "dir2/")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+      tmp.exec %(git checkout -b v1)
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+      # Create dir1 and tag 1.0.0
+      tmp.exec %(mkdir dir1 && touch dir1/dummy_file)
+      tmp.exec %(git add dir1/)
+      tmp.exec %(git commit --no-gpg-sign -m "breaking: 2")
+      tmp.exec %(git tag "1.0.0")
+      # Create dir2 and commit
+      tmp.exec %(mkdir dir2 && touch dir2/dummy_file)
+      tmp.exec %(git add dir2/)
+      tmp.exec %(git commit --no-gpg-sign -m "3")
+
+      # git-version on dir2 should ignore tag on commit with dir1
+      version = git.get_version
+      hash = git.current_commit_hash
+      version.should eq("1.0.1-v1.1.#{hash}")
+    ensure
+      tmp.cleanup
+    end
+  end
+
+  it "ignore non log-path filtered breaking messages 2" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "", "dir2/")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+      tmp.exec %(git checkout -b v1)
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+      tmp.exec %(git tag "1.0.0")
+
+      tmp.exec %(mkdir dir1 && touch dir1/dummy_file)
+      tmp.exec %(git add dir1/)
+      tmp.exec %(git commit --no-gpg-sign -m "breaking: 2")
+
+      version = git.get_version
+      hash = git.current_commit_hash
+      version.should eq("1.0.1-v1.1.#{hash}")
+    ensure
+      tmp.cleanup
+    end
+  end
+
+  it "accept breaking messages if part of the log-path filter" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "", "dir1/")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+      tmp.exec %(git checkout -b v1)
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+      tmp.exec %(git tag "1.0.0")
+
+      tmp.exec %(mkdir dir1 && touch dir1/dummy_file)
+      tmp.exec %(git add dir1/)
+      tmp.exec %(git commit --no-gpg-sign -m "breaking: 2")
+
+      version = git.get_version
+      hash = git.current_commit_hash
+      version.should eq("2.0.0-v1.1.#{hash}")
+    ensure
+      tmp.cleanup
+    end
+  end
 end
