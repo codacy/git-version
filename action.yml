@@ -19,7 +19,6 @@ inputs:
 outputs:
   version:
     description: 'The version'
-    value: ${{ steps.set-version-output.outputs.version }}
 runs:
   using: 'docker'
   image: 'Dockerfile'
