@@ -1,0 +1,36 @@
+name: codacy-git-version
+description: 'Outputs the version from git-version'
+inputs:
+  release-branch:
+    description: 'The name of the release branch'
+    required: true
+    default: master
+  dev-branch:
+    description: 'The name of the dev branch'
+    required: true
+    default: dev
+  prefix:
+    description: 'The prefix to use in the version'
+    required: false
+  log-paths:
+    description: 'The paths to be used to calculate changes (comma-separated)'
+    required: false
+    default: ./
+outputs:
+  version:
+    description: 'The version'
+    value: ${{ steps.set-version-output.outputs.version }}
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - /bin/bash
+    - -c
+    - |
+      VERSION=$(/bin/git-version \
+                --release-branch "${{ inputs.release-branch }}" \
+                --dev-branch "${{ inputs.dev-branch }}" \
+                --log-paths "${{ inputs.log-paths }}" \
+                --version-prefix "${{ inputs.prefix }}") && \
+      echo "::set-output name=version::$VERSION" && \
+      echo "Version: $VERSION"
