@@ -1,4 +1,4 @@
-name: Codacy Git Version
+name: Git Version
 author: "Codacy"
 description: 'Semver versioning based on the git history and commit messages of your repository.'
 branding:
@@ -16,10 +16,10 @@ inputs:
   prefix:
     description: 'The prefix to use in the version'
     required: false
-  # log-paths:
-  #   description: 'The paths to be used to calculate changes (comma-separated)'
-  #   required: false
-  #   default: ./
+  log-paths:
+    description: 'The paths to be used to calculate changes (comma-separated)'
+    required: false
+    default: ./
 outputs:
   version:
     description: 'The version'
