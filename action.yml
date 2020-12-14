@@ -12,10 +12,10 @@ inputs:
   prefix:
     description: 'The prefix to use in the version'
     required: false
-  log-paths:
-    description: 'The paths to be used to calculate changes (comma-separated)'
-    required: false
-    default: ./
+  # log-paths:
+  #   description: 'The paths to be used to calculate changes (comma-separated)'
+  #   required: false
+  #   default: ./
 outputs:
   version:
     description: 'The version'
@@ -30,7 +30,6 @@ runs:
       VERSION=$(/bin/git-version \
                 --release-branch "${{ inputs.release-branch }}" \
                 --dev-branch "${{ inputs.dev-branch }}" \
-                --log-paths "${{ inputs.log-paths }}" \
                 --version-prefix "${{ inputs.prefix }}") && \
       echo "::set-output name=version::$VERSION" && \
       echo "Version: $VERSION"
