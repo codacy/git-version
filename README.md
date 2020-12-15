@@ -4,13 +4,162 @@
 [![CircleCI](https://circleci.com/gh/codacy/git-version.svg?style=svg)](https://circleci.com/gh/codacy/git-version)
 [![](https://images.microbadger.com/badges/version/codacy/git-version.svg)](https://microbadger.com/images/codacy/git-version "Get your own version badge on microbadger.com")
 
-Git versioning used in Codacy.
+The goal of this tool is to have a simple versioning system that we can use to track the different releases. The tool prints the current version (e.g. to be used for tagging) depending on the git history and commit messages.
 
-The goal is to have a simple versioning system for our internal projects that we can use to track the different releases.
+The versioning scheme is assumed to be __Semver__ based.
 
-This tool returns in standard output the current version (e.g. to be used for tagging) depending on the git history and commit messages.
+## Usage
 
-The versioning scheme is assumed to be __Semver__.
+```yaml
+# .github/workflows/version.yml
+name: Git Version
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Git Version
+        uses: codacy/git-version@2.2.0
+```
+
+### Mono-Repo
+
+You can use git-version to version different modules in a mono-repo structure.
+This can be achieved by using different `prefixes` and `log-path` filters for
+different modules.
+
+Assuming the following directory structure, we can use git-version to generate
+version with prefix `module1-x.x.x` for changes in the `module1/` directory
+and  `module2-x.x.x` for changes in the `module2/` directory.
+
+```sh
+.
+├── Dockerfile
+├── Makefile
+├── README.md
+├── module1
+│   ├── Dockerfile
+│   └── src/
+└── module2
+    ├── Dockerfile
+    └── src/
+```
+
+With github actions you can create different workflows that are triggered
+when changes happen on different directories.
+
+```yaml
+# .github/workflows/module1.yml
+name: Version Module 1
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/module1.yml
+      - module1/**
+  push:
+    paths:
+      - .github/workflows/module1.yml
+      - module1/**
+    branches:
+      - master
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Git Version
+        uses: codacy/git-version@2.2.0
+        with:
+          prefix: module1-
+          log-path: module1/
+```
+
+```yaml
+# .github/workflows/module2.yml
+name: Version Module 2
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/module2.yml
+      - module2/**
+  push:
+    paths:
+      - .github/workflows/module2.yml
+      - module2/**
+    branches:
+      - master
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Codacy Git Version
+        uses: codacy/git-version@2.2.0
+        with:
+          prefix: module2-
+          log-path: module2/
+```
+
+## Versioning Model
+
+Creates a version with the format `MAJOR.MINOR.PATCH`
+
+_To use this you need to be in the working dir of a git project:_
+```
+$ ./git-version
+1.0.0
+```
+
+Versions are incremented since the last tag. The patch version is incremented by default, unless there is at least one commit since the last tag, containing `feature:` or `breaking:` in the message.
+
+On branches other than master and `dev` the version is a variation of the latest common tag with master, and has the following format:
+
+`{MAJOR}.{MINOR}.{PATCH}-{sanitized-branch-name}.{commits-distance}.{hash}`
+
+On the `dev` branch the format is the following:
+
+`{MAJOR}.{MINOR}.{PATCH}-SNAPSHOT.{hash}`
+
+_Example:_
+```
+---A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 1.0.2)
+            \                             /
+             D---E---F---G---H---I---J---K <= Foo (git-version: 1.0.2-foo.8.5e30d83)
+```
+
+_Example2 (with dev branch):_
+```
+---A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 1.0.2)
+            \                             / <= Fast-forward merges to master (same commit id)
+             C                           L <= Dev (git-version: 1.0.2-SNAPSHOT.5e30d83)
+              \                         /
+               E---F---G---H---I---J---K <= Foo (new_version: 1.0.1-foo.7.5e30d83)
+```
+
+_Example3 (with breaking message):_
+```
+---A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 2.0.0)
+            \                             /
+             D---E---F---G---H---I---J---K <= Foo (git-version: 2.0.0-foo.8.5e30d83)
+                                         \\
+                                         message: "breaking: removed api parameter"
+```
 
 ## Requirements
 
@@ -44,50 +193,6 @@ brew install \
   git
 ```
 
-## Versioning Model
-
-Creates a version with the format `MAJOR.MINOR.PATCH`
-
-_To use this you need to be in the working dir of a git project:_
-```
-$ ./git-version
-1.0.0
-```
-
-Versions are incremented since last tag. The patch version is incremented by default, unless there is at least one commit since the last tag, containing `feature:` or `breaking:` in the message.
-
-On branches other than master and `dev` the version is a variation of the latest common tag with master, and has the following format:
-
-`{MAJOR}.{MINOR}.{PATCH}-{sanitized-branch-name}.{commits-distance}.{hash}`
-
-On the `dev` branch the format is following:
-
-`{MAJOR}.{MINOR}.{PATCH}-SNAPSHOT.{hash}`
-
-_Example:_
-```
----A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 1.0.2)
-            \                             /
-             D---E---F---G---H---I---J---K <= Foo (git-version: 1.0.2-foo.8.5e30d83)
-```
-
-_Example2 (with dev branch):_
-```
----A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 1.0.2)
-            \                             / <= Fast-forward merges to master (same commit id)
-             C                           L <= Dev (git-version: 1.0.2-SNAPSHOT.5e30d83)
-              \                         /
-               E---F---G---H---I---J---K <= Foo (new_version: 1.0.1-foo.7.5e30d83)
-```
-
-_Example3 (with breaking message):_
-```
----A---B---C <= Master (tag: 1.0.1)        L <= Master (git-version: 2.0.0)
-            \                             /
-             D---E---F---G---H---I---J---K <= Foo (git-version: 2.0.0-foo.8.5e30d83)
-                                         \\
-                                         message: "breaking: removed api parameter"
-```
 
 ## CircleCI
 
