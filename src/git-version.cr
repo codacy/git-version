@@ -53,7 +53,7 @@ module GitVersion
     end
 
     def log_path_filter
-      return "-- #{@log_path}"
+      @log_path.empty? ? "" : "-- #{@log_path}"
     end
 
     def release_branch
