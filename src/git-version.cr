@@ -70,15 +70,18 @@ module GitVersion
       return (exec cmd)[0].rjust(7, '0')
     end
 
-    def commits_distance(latest_tagged_version)
-      return (exec "git rev-list --count HEAD ^#{latest_tagged_version}")[0]
+    def commits_distance(tag : String | Nil)
+      if tag.nil?
+        return (exec "git rev-list --count HEAD")[0]
+      else
+        return (exec "git rev-list --count HEAD ^#{tag}")[0]
+      end
     rescue
       return 0
     end
 
-    def get_bumps(latest)
-      latest_exists = (exec "git tag -l #{latest}")
-      if latest_exists.any?
+    def get_bumps(latest : String | Nil)
+      if !latest.nil? && (exec "git tag -l #{latest}").any?
         last_commit = (exec "git show-ref -s #{latest}")[0]
         return (exec "git log --pretty=%B #{last_commit}..HEAD #{log_paths_filter}")
       else
@@ -94,6 +97,7 @@ module GitVersion
       branch_tags = tags_by_branch(cb)
 
       latest_version = BASE_VERSION
+      latest_tag = nil
 
       branch_tags.each do |tag|
         begin
@@ -101,18 +105,17 @@ module GitVersion
           if tag_without_prefix.nil?
             next
           end
-          current_tag = SemanticVersion.parse(tag_without_prefix)
-          if !current_tag.prerelease.identifiers.empty?
+          current_version = SemanticVersion.parse(tag_without_prefix)
+          if !current_version.prerelease.identifiers.empty?
             next
-          elsif (latest_version < current_tag)
-            latest_version = current_tag
+          elsif (latest_version < current_version)
+            latest_version = current_version
+            latest_tag = tag
           end
         rescue
           #
         end
       end
-
-      latest_tagged_version = latest_version
 
       latest_version =
         SemanticVersion.new(
@@ -124,7 +127,7 @@ module GitVersion
         )
 
       major = false
-      get_bumps(latest_tagged_version).each do |bump|
+      get_bumps(latest_tag).each do |bump|
         commit = bump.downcase
         if commit.includes?(MAJOR_BUMP_COMMENT)
           latest_version =
@@ -141,7 +144,7 @@ module GitVersion
       end
 
       if !major
-        get_bumps(latest_tagged_version).each do |bump|
+        get_bumps(latest_tag).each do |bump|
           commit = bump.downcase
           if commit.includes?(MINOR_BUMP_COMMENT)
             latest_version =
@@ -160,7 +163,7 @@ module GitVersion
       if cb == @release_branch
         #
       elsif cb == @dev_branch
-        prerelease = [DEV_BRANCH_SUFFIX, commits_distance(latest_tagged_version), current_commit_hash()] of String | Int32
+        prerelease = [DEV_BRANCH_SUFFIX, commits_distance(latest_tag), current_commit_hash()] of String | Int32
         latest_version =
           SemanticVersion.new(
             latest_version.major,
@@ -171,7 +174,7 @@ module GitVersion
           )
       else
         branch_sanitized_name = cb.downcase.gsub(/[^a-zA-Z0-9]/, "")
-        prerelease = [branch_sanitized_name, commits_distance(latest_tagged_version), current_commit_hash()] of String | Int32
+        prerelease = [branch_sanitized_name, commits_distance(latest_tag), current_commit_hash()] of String | Int32
         latest_version =
           SemanticVersion.new(
             latest_version.major,
