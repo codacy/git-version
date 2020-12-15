@@ -1,5 +1,9 @@
-name: codacy-git-version
-description: 'Outputs the version from git-version'
+name: Codacy Git Version
+author: "Codacy"
+description: 'Semver versioning based on the git history and commit messages of your repository.'
+branding:
+  icon: 'git-branch'
+  color: 'gray-dark'
 inputs:
   release-branch:
     description: 'The name of the release branch'
