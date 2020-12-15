@@ -618,6 +618,83 @@ describe GitVersion do
     end
   end
 
+  it "ignore log-path filtered breaking messages with multiple paths" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "", "dir1/ dir3/")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+      # Create dir1 and tag 1.0.0
+      base_dir = "dir1"
+      tmp.exec %(mkdir #{base_dir} && touch #{base_dir}/dummy_file)
+      tmp.exec %(git add #{base_dir}/)
+      tmp.exec %(git commit --no-gpg-sign -m "breaking: 1")
+      tmp.exec %(git tag "1.0.0")
+
+      tmp.exec %(git checkout -b dev)
+      # Create dir2 and commit breaking (to be ignored)
+      base_dir = "dir2"
+      tmp.exec %(mkdir #{base_dir} && touch #{base_dir}/dummy_file)
+      tmp.exec %(git add #{base_dir}/)
+      tmp.exec %(git commit --no-gpg-sign -m "breaking: 2")
+
+      # Create dir3 and commit non-breaking
+      base_dir = "dir3"
+      tmp.exec %(mkdir #{base_dir} && touch #{base_dir}/dummy_file)
+      tmp.exec %(git add #{base_dir}/)
+      tmp.exec %(git commit --no-gpg-sign -m "3")
+
+      tmp.exec %(git checkout master)
+      tmp.exec %(git merge --no-gpg-sign --no-ff dev)
+
+      # git-version should ignore the breaking tag on commit with dir2
+      version = git.get_version
+      version.should eq("1.0.1")
+    ensure
+      tmp.cleanup
+    end
+  end
+
+  it "accept log-path filtered breaking messages with multiple paths" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "", "dir2/ dir3/")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+      # Create dir1 and tag 1.0.0
+      base_dir = "dir1"
+      tmp.exec %(mkdir #{base_dir} && touch #{base_dir}/dummy_file)
+      tmp.exec %(git add #{base_dir}/)
+      tmp.exec %(git commit --no-gpg-sign -m "breaking: 1")
+      tmp.exec %(git tag "1.0.0")
+
+      tmp.exec %(git checkout -b dev)
+      # Create dir2 and commit breaking
+      base_dir = "dir2"
+      tmp.exec %(mkdir #{base_dir} && touch #{base_dir}/dummy_file)
+      tmp.exec %(git add #{base_dir}/)
+      tmp.exec %(git commit --no-gpg-sign -m "breaking: 2")
+      # Create dir3 and commit non-breaking
+      base_dir = "dir3"
+      tmp.exec %(mkdir #{base_dir} && touch #{base_dir}/dummy_file)
+      tmp.exec %(git add #{base_dir}/)
+      tmp.exec %(git commit --no-gpg-sign -m "3")
+
+      tmp.exec %(git checkout master)
+      tmp.exec %(git merge --no-gpg-sign --no-ff dev)
+
+      # git-version should accept the breaking tag on commit with dir2
+      version = git.get_version
+      version.should eq("2.0.0")
+    ensure
+      tmp.cleanup
+    end
+  end
+
   it "accept breaking messages if part of the log-path filter" do
     tmp = InTmp.new
 
@@ -637,6 +714,44 @@ describe GitVersion do
       version = git.get_version
       hash = git.current_commit_hash
       version.should eq("2.0.0-v1.1.#{hash}")
+    ensure
+      tmp.cleanup
+    end
+  end
+
+  it "multirepo log-path filter (multiple dirs, multiple prefixes)" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "dir2-", "dir2/ dir3/")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+      # Create dir1 and tag dir1-1.0.0
+      base_dir = "dir1"
+      tmp.exec %(mkdir #{base_dir} && touch #{base_dir}/dummy_file)
+      tmp.exec %(git add #{base_dir}/)
+      tmp.exec %(git commit --no-gpg-sign -m "breaking: 1")
+      tmp.exec %(git tag "dir1-1.0.0")
+
+      # Create dir2 and tag dir2-1.0.0
+      base_dir = "dir2"
+      tmp.exec %(mkdir #{base_dir} && touch #{base_dir}/dummy_file)
+      tmp.exec %(git add #{base_dir}/)
+      tmp.exec %(git commit --no-gpg-sign -m "breaking: 2")
+      tmp.exec %(git tag "dir2-1.0.0")
+
+      tmp.exec %(git checkout -b dev)
+      # Create dir2 and commit breaking
+      base_dir = "dir2"
+      tmp.exec %(mkdir #{base_dir} && touch #{base_dir}/dummy_file)
+      tmp.exec %(git add #{base_dir}/)
+      tmp.exec %(git commit --no-gpg-sign -m "breaking: 2")
+
+      # git-version should accept the breaking tag on commit with dir2
+      version = git.get_version
+      hash = git.current_commit_hash
+      version.should eq("dir2-2.0.0-SNAPSHOT.0.#{hash}")
     ensure
       tmp.cleanup
     end
