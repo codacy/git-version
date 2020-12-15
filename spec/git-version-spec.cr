@@ -443,7 +443,9 @@ describe GitVersion do
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
-      tmp.exec %(git tag "0.1.0-asd")
+      tmp.exec %(git tag "0.1.0")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "feature: 2")
+      tmp.exec %(git tag "0.2.0-asd")
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m ":breaking: 2")
 
       version = git.get_version
@@ -484,7 +486,7 @@ describe GitVersion do
 
       version = git.get_version
       hash = git.current_commit_hash
-      version.should eq("1.0.0-v1.0.#{hash}")
+      version.should eq("1.0.0-v1.1.#{hash}")
     ensure
       tmp.cleanup
     end
@@ -498,11 +500,12 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
-      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
-      tmp.exec %(git tag "v1.0.0")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "feature: 1")
+      tmp.exec %(git tag "v1.1.0")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
 
       version = git.get_version
-      version.should eq("v1.0.1")
+      version.should eq("v1.1.1")
     ensure
       tmp.cleanup
     end
@@ -559,7 +562,7 @@ describe GitVersion do
 
       version = git.get_version
       hash = git.current_commit_hash
-      version.should eq("1.0.0-v1.0.#{hash}")
+      version.should eq("1.0.0-v1.3.#{hash}")
     ensure
       tmp.cleanup
     end
@@ -703,6 +706,7 @@ describe GitVersion do
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
+
       # Create dir1 and tag dir1-1.0.0
       base_dir = "dir1"
       tmp.exec %(mkdir #{base_dir} && touch #{base_dir}/dummy_file)
@@ -718,16 +722,17 @@ describe GitVersion do
       tmp.exec %(git tag "dir2-1.0.0")
 
       tmp.exec %(git checkout -b dev)
+
       # Create dir2 and commit breaking
       base_dir = "dir2"
-      tmp.exec %(mkdir #{base_dir} && touch #{base_dir}/dummy_file)
+      tmp.exec %(mkdir -p #{base_dir} && touch #{base_dir}/dummy_file_2)
       tmp.exec %(git add #{base_dir}/)
-      tmp.exec %(git commit --no-gpg-sign -m "breaking: 2")
+      tmp.exec %(git commit --no-gpg-sign -m "breaking: 3")
 
       # git-version should accept the breaking tag on commit with dir2
       version = git.get_version
       hash = git.current_commit_hash
-      version.should eq("dir2-2.0.0-SNAPSHOT.0.#{hash}")
+      version.should eq("dir2-2.0.0-SNAPSHOT.1.#{hash}")
     ensure
       tmp.cleanup
     end
