@@ -21,7 +21,8 @@ jobs:
   compile:
     <<: *default_machine_job
     steps:
-      - checkout
+      - attach_workspace:
+          at: ~/workdir
       - run:
           name: Get version
           command: |
@@ -37,6 +38,7 @@ jobs:
             - "*"
       - store_artifacts:
           path: bin
+
   build_docker:
     <<: *default_machine_job
     steps:
@@ -102,7 +104,13 @@ workflows:
   version: 2
   publish:
     jobs:
-      - compile
+      - codacy/checkout_and_version:
+          filters:
+            branches:
+              ignore: master
+      - compile:
+          requires:
+            - codacy/checkout_and_version
       - build_docker:
           requires:
             - compile
