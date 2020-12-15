@@ -319,7 +319,7 @@ describe GitVersion do
       tmp.exec %(git merge myfeature)
 
       tmp.exec %(git checkout master)
-      tmp.exec %(git rebase dev)
+      tmp.exec %(git rebase --no-gpg-sign dev)
       version = git.get_version
       version.should eq("1.0.1")
     ensure
@@ -345,7 +345,7 @@ describe GitVersion do
 
       tmp.exec %(git checkout dev)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "4")
-      tmp.exec %(git rebase master)
+      tmp.exec %(git rebase --no-gpg-sign master)
 
       tmp.exec %(git checkout master)
       tmp.exec %(git merge --no-gpg-sign --no-ff dev)

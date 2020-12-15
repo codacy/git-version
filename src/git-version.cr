@@ -24,12 +24,7 @@ module GitVersion
     end
 
     private def strip_prefix(version : String) : String | Nil
-      stripped = version.lstrip(@prefix)
-      if @prefix != "" && stripped.size >= version.size
-        nil
-      else
-        stripped
-      end
+      version.lchop?(@prefix)
     end
 
     private def exec(cmd)
