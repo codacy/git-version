@@ -17,7 +17,7 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "1.0.0")
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("1.0.1")
 
@@ -34,7 +34,7 @@ describe GitVersion do
 
       hash = git.current_commit_hash
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("1.0.1-SNAPSHOT.1.#{hash}")
 
@@ -63,7 +63,7 @@ describe GitVersion do
 
       hash = git.current_commit_hash
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("1.0.1-myfancybranch.1.#{hash}")
     ensure
@@ -88,7 +88,7 @@ describe GitVersion do
 
       hash = git.current_commit_hash
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("2.0.0-SNAPSHOT.1.#{hash}")
 
@@ -96,7 +96,7 @@ describe GitVersion do
 
       hash = git.current_commit_hash
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("2.0.0-SNAPSHOT.2.#{hash}")
 
@@ -104,7 +104,7 @@ describe GitVersion do
 
       hash = git.current_commit_hash
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("2.0.0-SNAPSHOT.3.#{hash}")
     ensure
@@ -130,13 +130,13 @@ describe GitVersion do
 
       tmp.exec %(git checkout master)
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("1.0.1")
 
       tmp.exec %(git merge my-fancy.branch)
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("2.0.0")
 
@@ -146,13 +146,13 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: ABC")
       tmp.exec %(git checkout master)
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("2.0.1")
 
       tmp.exec %(git merge --ff-only my-fancy.branch2)
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("3.0.0")
 
@@ -162,13 +162,13 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "feature: 123")
       tmp.exec %(git checkout master)
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("3.0.1")
 
       tmp.exec %(git merge --no-gpg-sign --no-ff my-fancy.branch3)
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("3.1.0")
     ensure
@@ -197,7 +197,7 @@ describe GitVersion do
 
       hash = git.current_commit_hash
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("1.0.1-ft1111.2.#{hash}")
     ensure
@@ -215,7 +215,7 @@ describe GitVersion do
       tmp.exec %(git checkout -b master)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("0.0.1")
     ensure
@@ -239,7 +239,7 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "4")
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "5")
 
-      version = git.get_version
+      version = git.get_new_version
 
       version.should eq("1.2.1")
     ensure
@@ -260,36 +260,36 @@ describe GitVersion do
       tmp.exec %(git checkout -b feature1)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "feature: 2")
       hash = git.current_commit_hash
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("1.1.0-feature1.1.#{hash}")
 
       tmp.exec %(git checkout master)
       tmp.exec %(git checkout -b feature2)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: 3")
       hash = git.current_commit_hash
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("2.0.0-feature2.1.#{hash}")
 
       tmp.exec %(git checkout master)
       tmp.exec %(git merge feature2)
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("2.0.0")
       tmp.exec %(git tag "2.0.0")
 
       tmp.exec %(git checkout -b feature3)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "4")
       hash = git.current_commit_hash
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("2.0.1-feature3.1.#{hash}")
 
       tmp.exec %(git checkout master)
       tmp.exec %(git merge --no-gpg-sign feature1)
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("2.1.0")
       tmp.exec %(git tag "2.1.0")
 
       tmp.exec %(git merge --no-gpg-sign feature3)
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("2.1.1")
       tmp.exec %(git tag "2.1.1")
     ensure
@@ -310,7 +310,7 @@ describe GitVersion do
       tmp.exec %(git checkout -b dev)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
       hash = git.current_commit_hash
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("1.0.1-SNAPSHOT.1.#{hash}")
 
       tmp.exec %(git checkout -b myfeature)
@@ -320,7 +320,7 @@ describe GitVersion do
 
       tmp.exec %(git checkout master)
       tmp.exec %(git rebase --no-gpg-sign dev)
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("1.0.1")
     ensure
       tmp.cleanup
@@ -352,7 +352,7 @@ describe GitVersion do
       # e.g. commit added when merging by bitbucket, no easy way to produce it automatically...
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "Merged xyz (123) breaking:")
 
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("2.0.0")
     ensure
       tmp.cleanup
@@ -372,7 +372,7 @@ describe GitVersion do
       tmp.exec %(git checkout -b dev)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: 2")
 
-      version = git.get_version
+      version = git.get_new_version
       hash = git.current_commit_hash
       tmp.exec %(git tag "#{version}")
       version.should eq("2.0.0-SNAPSHOT.1.#{hash}")
@@ -380,7 +380,7 @@ describe GitVersion do
       tmp.exec %(git checkout master)
       tmp.exec %(git merge --no-gpg-sign --no-ff dev)
 
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("2.0.0")
     ensure
       tmp.cleanup
@@ -400,7 +400,7 @@ describe GitVersion do
       tmp.exec %(git checkout -b dev)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
 
-      version = git.get_version
+      version = git.get_new_version
       hash = git.current_commit_hash
       tmp.exec %(git tag "#{version}")
       version.should eq("1.0.1-SNAPSHOT.1.#{hash}")
@@ -408,7 +408,7 @@ describe GitVersion do
       tmp.exec %(git checkout master)
       tmp.exec %(git merge --no-gpg-sign --no-ff dev)
 
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("1.0.1")
     ensure
       tmp.cleanup
@@ -427,7 +427,7 @@ describe GitVersion do
       tmp.exec %(git tag "0.1.0")
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m ":breaking: 2")
 
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("1.0.0")
     ensure
       tmp.cleanup
@@ -448,7 +448,7 @@ describe GitVersion do
       tmp.exec %(git tag "0.2.0-asd")
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m ":breaking: 2")
 
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("1.0.0")
     ensure
       tmp.cleanup
@@ -465,7 +465,7 @@ describe GitVersion do
       tmp.exec %(git checkout -b master)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: 1")
 
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("1.0.0")
     ensure
       tmp.cleanup
@@ -484,7 +484,7 @@ describe GitVersion do
       tmp.exec %(git tag v1)
       tmp.exec %(git checkout v1)
 
-      version = git.get_version
+      version = git.get_new_version
       hash = git.current_commit_hash
       version.should eq("1.0.0-v1.1.#{hash}")
     ensure
@@ -504,7 +504,7 @@ describe GitVersion do
       tmp.exec %(git tag "v1.1.0")
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
 
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("v1.1.1")
     ensure
       tmp.cleanup
@@ -522,7 +522,7 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "1.0.0")
 
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("v0.0.1")
     ensure
       tmp.cleanup
@@ -540,7 +540,7 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "v")
 
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("v0.0.1")
     ensure
       tmp.cleanup
@@ -560,7 +560,7 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: 2")
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: 3")
 
-      version = git.get_version
+      version = git.get_new_version
       hash = git.current_commit_hash
       version.should eq("1.0.0-v1.3.#{hash}")
     ensure
@@ -589,7 +589,7 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign -m "3")
 
       # git-version on dir2 should ignore tag on commit with dir1
-      version = git.get_version
+      version = git.get_new_version
       hash = git.current_commit_hash
       version.should eq("1.0.1-v1.1.#{hash}")
     ensure
@@ -629,7 +629,7 @@ describe GitVersion do
       tmp.exec %(git merge --no-gpg-sign --no-ff dev)
 
       # git-version should ignore the breaking tag on commit with dir2
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("1.0.1")
     ensure
       tmp.cleanup
@@ -667,7 +667,7 @@ describe GitVersion do
       tmp.exec %(git merge --no-gpg-sign --no-ff dev)
 
       # git-version should accept the breaking tag on commit with dir2
-      version = git.get_version
+      version = git.get_new_version
       version.should eq("2.0.0")
     ensure
       tmp.cleanup
@@ -690,7 +690,7 @@ describe GitVersion do
       tmp.exec %(git add dir1/)
       tmp.exec %(git commit --no-gpg-sign -m "breaking: 2")
 
-      version = git.get_version
+      version = git.get_new_version
       hash = git.current_commit_hash
       version.should eq("2.0.0-v1.1.#{hash}")
     ensure
@@ -730,11 +730,67 @@ describe GitVersion do
       tmp.exec %(git commit --no-gpg-sign -m "breaking: 3")
 
       # git-version should accept the breaking tag on commit with dir2
-      version = git.get_version
+      version = git.get_new_version
       hash = git.current_commit_hash
       version.should eq("dir2-2.0.0-SNAPSHOT.1.#{hash}")
     ensure
       tmp.cleanup
     end
+  end
+end
+
+it "get previous version - first commit" do
+  tmp = InTmp.new
+
+  begin
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+
+    tmp.exec %(git init)
+    tmp.exec %(git checkout -b master)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+
+
+    # git-version should accept the breaking tag on commit with dir2
+    version = git.get_previous_version
+    version.should eq("0.0.0")
+  ensure
+    tmp.cleanup
+  end
+end
+
+it "get previous version - first commit w/ prefix" do
+  tmp = InTmp.new
+
+  begin
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "v")
+
+    tmp.exec %(git init)
+    tmp.exec %(git checkout -b master)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+
+    # git-version should accept the breaking tag on commit with dir2
+    version = git.get_previous_version
+    version.should eq("v0.0.0")
+  ensure
+    tmp.cleanup
+  end
+end
+
+it "get previous version - pre-tagged" do
+  tmp = InTmp.new
+
+  begin
+    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "v")
+
+    tmp.exec %(git init)
+    tmp.exec %(git checkout -b master)
+    tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+    tmp.exec %(git tag "v1.0.0")
+
+    # git-version should accept the breaking tag on commit with dir2
+    version = git.get_previous_version
+    version.should eq("v1.0.0")
+  ensure
+    tmp.cleanup
   end
 end

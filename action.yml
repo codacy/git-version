@@ -22,7 +22,9 @@ inputs:
     default: ./
 outputs:
   version:
-    description: 'The version'
+    description: 'The value of the new pre-calculated tag'
+  previous-version:
+    description: 'Contains the value of previous tag, before calculating a new one'
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -35,4 +37,13 @@ runs:
                 --dev-branch "${{ inputs.dev-branch }}" \
                 --version-prefix "${{ inputs.prefix }}") && \
       echo "::set-output name=version::$VERSION" && \
-      echo "Version: $VERSION"
+
+      PREVIOUS_VERSION=$(/bin/git-version \
+                --previous-version \
+                --release-branch "${{ inputs.release-branch }}" \
+                --dev-branch "${{ inputs.dev-branch }}" \
+                --version-prefix "${{ inputs.prefix }}") && \
+      echo "::set-output name=previous-version::$PREVIOUS_VERSION" && \
+
+      echo "Previous Version: $PREVIOUS_VERSION"
+      echo "New Version: $VERSION"
