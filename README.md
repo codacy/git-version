@@ -25,6 +25,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}   # checkout the correct branch name
+          fetch-depth: 0                # fetch the whole repo history
 
       - name: Git Version
         uses: codacy/git-version@2.2.0
@@ -78,6 +81,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}   # checkout the correct branch name
+          fetch-depth: 0                # fetch the whole repo history
 
       - name: Git Version
         uses: codacy/git-version@2.2.0
@@ -108,8 +114,11 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}   # checkout the correct branch name
+          fetch-depth: 0                # fetch the whole repo history
 
-      - name: Codacy Git Version
+      - name: Git Version
         uses: codacy/git-version@2.2.0
         with:
           prefix: module2-
