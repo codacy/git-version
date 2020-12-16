@@ -23,8 +23,8 @@ inputs:
 outputs:
   version:
     description: 'The value of the new pre-calculated tag'
-  latest-version:
-    description: 'Contains the value of latest tag, before calculating a new one'
+  previous-version:
+    description: 'Contains the value of previous tag, before calculating a new one'
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -38,12 +38,12 @@ runs:
                 --version-prefix "${{ inputs.prefix }}") && \
       echo "::set-output name=version::$VERSION" && \
 
-      LATEST_VERSION=$(/bin/git-version \
-                --latest-version \
+      PREVIOUS_VERSION=$(/bin/git-version \
+                --previous-version \
                 --release-branch "${{ inputs.release-branch }}" \
                 --dev-branch "${{ inputs.dev-branch }}" \
                 --version-prefix "${{ inputs.prefix }}") && \
-      echo "::set-output name=latest-version::$LATEST_VERSION" && \
+      echo "::set-output name=previous-version::$PREVIOUS_VERSION" && \
 
-      echo "Latest Version: $VERSION"
+      echo "Previous Version: $PREVIOUS_VERSION"
       echo "New Version: $VERSION"
