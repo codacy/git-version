@@ -92,7 +92,7 @@ module GitVersion
       return [] of String
     end
 
-    def get_version
+    def get_latest_tag_and_version: Tuple(String | Nil, SemanticVersion)
       cb = current_branch_or_tag
 
       branch_tags = tags_by_branch(cb)
@@ -117,6 +117,16 @@ module GitVersion
           #
         end
       end
+      return {latest_tag, latest_version}
+    end
+
+    def get_latest_version: String
+      lt, lv = get_latest_tag_and_version
+      return lt ? lt : add_prefix(lv.to_s)
+    end
+
+    def get_new_version
+      latest_tag, latest_version = get_latest_tag_and_version
 
       latest_version =
         SemanticVersion.new(
@@ -160,6 +170,8 @@ module GitVersion
           end
         end
       end
+
+      cb = current_branch_or_tag
 
       if cb == @release_branch
         #
