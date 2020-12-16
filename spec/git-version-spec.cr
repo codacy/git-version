@@ -739,7 +739,7 @@ describe GitVersion do
   end
 end
 
-it "get latest version - first commit" do
+it "get previous version - first commit" do
   tmp = InTmp.new
 
   begin
@@ -751,15 +751,14 @@ it "get latest version - first commit" do
 
 
     # git-version should accept the breaking tag on commit with dir2
-    version = git.get_latest_version
-    hash = git.current_commit_hash
+    version = git.get_previous_version
     version.should eq("0.0.0")
   ensure
     tmp.cleanup
   end
 end
 
-it "get latest version - first commit w/ prefix" do
+it "get previous version - first commit w/ prefix" do
   tmp = InTmp.new
 
   begin
@@ -770,15 +769,14 @@ it "get latest version - first commit w/ prefix" do
     tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
 
     # git-version should accept the breaking tag on commit with dir2
-    version = git.get_latest_version
-    hash = git.current_commit_hash
+    version = git.get_previous_version
     version.should eq("v0.0.0")
   ensure
     tmp.cleanup
   end
 end
 
-it "get latest version - pre-tagged" do
+it "get previous version - pre-tagged" do
   tmp = InTmp.new
 
   begin
@@ -790,8 +788,7 @@ it "get latest version - pre-tagged" do
     tmp.exec %(git tag "v1.0.0")
 
     # git-version should accept the breaking tag on commit with dir2
-    version = git.get_latest_version
-    hash = git.current_commit_hash
+    version = git.get_previous_version
     version.should eq("v1.0.0")
   ensure
     tmp.cleanup
