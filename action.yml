@@ -5,6 +5,10 @@ branding:
   icon: 'git-branch'
   color: 'gray-dark'
 inputs:
+  tool-version:
+    description: 'The version of the tool to be ran'
+    required: true
+    default: latest
   release-branch:
     description: 'The name of the release branch'
     required: true
@@ -23,27 +27,39 @@ inputs:
 outputs:
   version:
     description: 'The value of the new pre-calculated tag'
+    value: ${{ steps.version.outputs.version }}
   previous-version:
     description: 'Contains the value of previous tag, before calculating a new one'
+    value: ${{ steps.previous-version.outputs.version }}
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - /bin/bash
-    - -c
-    - |
-      VERSION=$(/bin/git-version \
-                --release-branch "${{ inputs.release-branch }}" \
-                --dev-branch "${{ inputs.dev-branch }}" \
-                --version-prefix "${{ inputs.prefix }}") && \
-      echo "::set-output name=version::$VERSION" && \
+  using: "composite"
+  steps:
+    - id: previous-version
+      shell: bash
+      run: |
+        set -e
 
-      PREVIOUS_VERSION=$(/bin/git-version \
-                --previous-version \
-                --release-branch "${{ inputs.release-branch }}" \
-                --dev-branch "${{ inputs.dev-branch }}" \
-                --version-prefix "${{ inputs.prefix }}") && \
-      echo "::set-output name=previous-version::$PREVIOUS_VERSION" && \
+        export PREVIOUS_VERSION=$(docker run -v $(pwd):/repo codacy/git-version:${{ inputs.tool-version }} \
+          /bin/git-version \
+            --previous-version \
+            --folder /repo \
+            --release-branch "${{ inputs.release-branch }}" \
+            --dev-branch "${{ inputs.dev-branch }}" \
+            --version-prefix "${{ inputs.prefix }}")
 
-      echo "Previous Version: $PREVIOUS_VERSION"
-      echo "New Version: $VERSION"
+        echo "::set-output name=previous-version::$PREVIOUS_VERSION"
+        echo "Previous Version: $PREVIOUS_VERSION"
+    - id: version
+      shell: bash
+      run: |
+        set -e
+
+        export VERSION=$(docker run -v $(pwd):/repo codacy/git-version:${{ inputs.tool-version }} \
+          /bin/git-version \
+            --folder /repo \
+            --release-branch "${{ inputs.release-branch }}" \
+            --dev-branch "${{ inputs.dev-branch }}" \
+            --version-prefix "${{ inputs.prefix }}")
+
+        echo "::set-output name=version::$VERSION"
+        echo "New Version: $VERSION"
