@@ -30,7 +30,7 @@ outputs:
     value: ${{ steps.version.outputs.version }}
   previous-version:
     description: 'Contains the value of previous tag, before calculating a new one'
-    value: ${{ steps.previous-version.outputs.version }}
+    value: ${{ steps.previous-version.outputs.previous-version }}
 runs:
   using: "composite"
   steps:
