@@ -226,7 +226,7 @@ jobs:
 
 The pipeline in `circleci` can deploy this for you when the code is pushed to the remote.
 
-To compile locally you need to install [crystal](https://crystal-lang.org/docs/installation/) and possibly [all required libraries](https://github.com/crystal-lang/crystal/wiki/All-required-libraries)
+To compile locally you need to install [crystal](https://crystal-lang.org/install/) and possibly [all required libraries](https://github.com/crystal-lang/crystal/wiki/All-required-libraries)
 
 You can also run everything locally using the makefile.
 
