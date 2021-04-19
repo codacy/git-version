@@ -56,7 +56,7 @@ module GitVersion
     end
 
     def tags_by_branch(branch)
-      return exec "git tag --merged #{branch}"
+      return exec "git tag --merged refs/remotes/origin/#{branch}"
     end
 
     def current_branch_or_tag
