@@ -19,8 +19,10 @@ OptionParser.parse! do |parser|
   parser.on("-f FOLDER", "--folder=FOLDER", "Execute the command in the defined folder") { |f| folder = f }
   parser.on("-b BRANCH", "--dev-branch=BRANCH", "Specifies the development branch") { |branch| dev_branch = branch }
   parser.on("-r BRANCH", "--release-branch=BRANCH", "Specifies the release branch") { |branch| release_branch = branch }
-  parser.on("--minor-identifier=IDENTIFIER", "Specifies the string or regex to identify a minor release commit with") { |identifier| minor_identifier = identifier }
-  parser.on("--major-identifier=IDENTIFIER", "Specifies the string or regex to identify a major release commit with") { |identifier| major_identifier = identifier }
+  parser.on("--minor-identifier=IDENTIFIER",
+    "Specifies the string or regex to identify a minor release commit with") { |identifier| minor_identifier = identifier }
+  parser.on("--major-identifier=IDENTIFIER",
+    "Specifies the string or regex to identify a major release commit with") { |identifier| major_identifier = identifier }
   parser.on("-p PREFIX", "--version-prefix=PREFIX", "Specifies a version prefix") { |p| prefix = p }
   parser.on("-l PATH", "--log-paths=PATH", "") { |path| log_paths = path }
   parser.on("--previous-version", "Returns the previous tag instead of calculating a new one") { previous_version=true }
