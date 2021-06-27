@@ -10,11 +10,8 @@ module GitVersion
 
   DEV_BRANCH_SUFFIX = "SNAPSHOT"
 
-  MAJOR_BUMP_COMMENT = "breaking:"
-  MINOR_BUMP_COMMENT = "feature:"
-
   class Git
-    def initialize(@dev_branch : String, @release_branch : String = "master",
+    def initialize(@dev_branch : String, @release_branch : String, @minor_identifier : String, @major_identifier : String,
                    @folder = FileUtils.pwd, @prefix : String = "", @log_paths : String = "")
       #
     end
@@ -139,7 +136,7 @@ module GitVersion
       major = false
       get_commits_since(previous_tag).each do |c|
         commit = c.downcase
-        if commit.includes?(MAJOR_BUMP_COMMENT)
+        if /#{@major_identifier}/.match(commit)
           previous_version =
             SemanticVersion.new(
               previous_version.major + 1,
@@ -156,7 +153,7 @@ module GitVersion
       if !major
         get_commits_since(previous_tag).each do |c|
           commit = c.downcase
-          if commit.includes?(MINOR_BUMP_COMMENT)
+          if /#{@minor_identifier}/.match(commit)
             previous_version =
               SemanticVersion.new(
                 previous_version.major,
