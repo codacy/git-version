@@ -53,8 +53,8 @@ runs:
             --folder /repo \
             --release-branch "${{ inputs.release-branch }}" \
             --dev-branch "${{ inputs.dev-branch }}" \
-            --minor-identifier="{{ inputs.minor-identifier }}" \
-            --major-identifier="{{ inputs.major-identifier }}" \
+            --minor-identifier="${{ inputs.minor-identifier }}" \
+            --major-identifier="${{ inputs.major-identifier }}" \
             --version-prefix "${{ inputs.prefix }}")
 
         echo "::set-output name=previous-version::$PREVIOUS_VERSION"
@@ -69,8 +69,8 @@ runs:
             --folder /repo \
             --release-branch "${{ inputs.release-branch }}" \
             --dev-branch "${{ inputs.dev-branch }}" \
-            --minor-identifier="{{ inputs.minor-identifier }}" \
-            --major-identifier="{{ inputs.major-identifier }}" \
+            --minor-identifier="${{ inputs.minor-identifier }}" \
+            --major-identifier="${{ inputs.major-identifier }}" \
             --version-prefix "${{ inputs.prefix }}")
 
         echo "::set-output name=version::$VERSION"
