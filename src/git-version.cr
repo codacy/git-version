@@ -13,6 +13,16 @@ module GitVersion
   class Git
     def initialize(@dev_branch : String, @release_branch : String, @minor_identifier : String, @major_identifier : String,
                    @folder = FileUtils.pwd, @prefix : String = "", @log_paths : String = "")
+      @major_id_is_regex = false
+      @minor_id_is_regex = false
+      if match = /\/(.*)\//.match(@major_identifier)
+        @major_identifier = match[1]
+        @major_id_is_regex = true
+      end
+      if match = /\/(.*)\//.match(@minor_identifier)
+        @minor_identifier = match[1]
+        @minor_id_is_regex = true
+      end
       #
     end
 
@@ -136,7 +146,17 @@ module GitVersion
       major = false
       get_commits_since(previous_tag).each do |c|
         commit = c.downcase
-        if /#{@major_identifier}/.match(commit)
+        match = false
+        if @major_id_is_regex
+          if /#{@major_identifier}/.match(commit)
+            match = true
+          end
+        else
+          if commit.includes?(@major_identifier)
+            match = true
+          end
+        end
+        if match
           previous_version =
             SemanticVersion.new(
               previous_version.major + 1,
@@ -153,7 +173,17 @@ module GitVersion
       if !major
         get_commits_since(previous_tag).each do |c|
           commit = c.downcase
-          if /#{@minor_identifier}/.match(commit)
+          match = false
+          if @minor_id_is_regex
+            if /#{@minor_identifier}/.match(commit)
+              match = true
+            end
+          else
+            if commit.includes?(@minor_identifier)
+              match = true
+            end
+          end
+          if match
             previous_version =
               SemanticVersion.new(
                 previous_version.major,
