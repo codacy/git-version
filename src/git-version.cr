@@ -147,15 +147,10 @@ module GitVersion
       major = false
       get_commits_since(previous_tag).each do |c|
         commit = c.downcase
-        match = false
-        if @major_id_is_regex
-          if /#{@major_identifier}/.match(commit)
-            match = true
-          end
+        match = if @major_id_is_regex
+          /#{@major_identifier}/.match(commit)
         else
-          if commit.includes?(@major_identifier)
-            match = true
-          end
+          commit.includes?(@major_identifier)
         end
         if match
           previous_version =
@@ -174,15 +169,10 @@ module GitVersion
       if !major
         get_commits_since(previous_tag).each do |c|
           commit = c.downcase
-          match = false
-          if @minor_id_is_regex
-            if /#{@minor_identifier}/.match(commit)
-              match = true
-            end
+          match = if @minor_id_is_regex
+            /#{@minor_identifier}/.match(commit)
           else
-            if commit.includes?(@minor_identifier)
-              match = true
-            end
+            commit.includes?(@minor_identifier)
           end
           if match
             previous_version =
