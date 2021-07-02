@@ -10,12 +10,19 @@ module GitVersion
 
   DEV_BRANCH_SUFFIX = "SNAPSHOT"
 
-  MAJOR_BUMP_COMMENT = "breaking:"
-  MINOR_BUMP_COMMENT = "feature:"
-
   class Git
-    def initialize(@dev_branch : String, @release_branch : String = "master",
+    def initialize(@dev_branch : String, @release_branch : String, @minor_identifier : String, @major_identifier : String,
                    @folder = FileUtils.pwd, @prefix : String = "", @log_paths : String = "")
+      @major_id_is_regex = false
+      @minor_id_is_regex = false
+      if match = /\/(.*)\//.match(@major_identifier)
+        @major_identifier = match[1]
+        @major_id_is_regex = true
+      end
+      if match = /\/(.*)\//.match(@minor_identifier)
+        @minor_identifier = match[1]
+        @minor_id_is_regex = true
+      end
       #
     end
 
@@ -139,7 +146,12 @@ module GitVersion
       major = false
       get_commits_since(previous_tag).each do |c|
         commit = c.downcase
-        if commit.includes?(MAJOR_BUMP_COMMENT)
+        match = if @major_id_is_regex
+          /#{@major_identifier}/.match(commit)
+        else
+          commit.includes?(@major_identifier)
+        end
+        if match
           previous_version =
             SemanticVersion.new(
               previous_version.major + 1,
@@ -156,7 +168,12 @@ module GitVersion
       if !major
         get_commits_since(previous_tag).each do |c|
           commit = c.downcase
-          if commit.includes?(MINOR_BUMP_COMMENT)
+          match = if @minor_id_is_regex
+            /#{@minor_identifier}/.match(commit)
+          else
+            commit.includes?(@minor_identifier)
+          end
+          if match
             previous_version =
               SemanticVersion.new(
                 previous_version.major,

@@ -10,7 +10,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b #{git.release_branch})
@@ -59,7 +59,7 @@ describe GitVersion do
       tmp.exec %(git checkout -b my-fancy.branch)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
 
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       hash = git.current_commit_hash
 
@@ -82,7 +82,7 @@ describe GitVersion do
 
       tmp.exec %(git checkout -b dev)
 
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: XYZ")
 
@@ -116,7 +116,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -180,7 +180,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -209,7 +209,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -227,7 +227,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -251,7 +251,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -301,7 +301,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -331,7 +331,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -363,7 +363,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -391,7 +391,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -419,7 +419,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -438,7 +438,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -459,7 +459,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -476,7 +476,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -496,7 +496,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "v")
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "v")
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -515,7 +515,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "v")
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "v")
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -533,7 +533,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "v")
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "v")
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -551,7 +551,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -572,7 +572,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "", "dir2/")
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "", "dir2/")
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -601,7 +601,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "", "dir1/ dir3/")
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "", "dir1/ dir3/")
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -640,7 +640,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "", "dir2/ dir3/")
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "", "dir2/ dir3/")
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -678,7 +678,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "", "dir1/")
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "", "dir1/")
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -702,7 +702,7 @@ describe GitVersion do
     tmp = InTmp.new
 
     begin
-      git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "dir2-", "dir2/ dir3/")
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "dir2-", "dir2/ dir3/")
 
       tmp.exec %(git init)
       tmp.exec %(git checkout -b master)
@@ -743,7 +743,7 @@ it "get previous version - first commit" do
   tmp = InTmp.new
 
   begin
-    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir)
+    git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
@@ -762,7 +762,7 @@ it "get previous version - first commit w/ prefix" do
   tmp = InTmp.new
 
   begin
-    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "v")
+    git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "v")
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
@@ -780,7 +780,7 @@ it "get previous version - pre-tagged" do
   tmp = InTmp.new
 
   begin
-    git = GitVersion::Git.new("dev", "master", tmp.@tmpdir, "v")
+    git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "v")
 
     tmp.exec %(git init)
     tmp.exec %(git checkout -b master)
