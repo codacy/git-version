@@ -35,12 +35,12 @@ clean: ## clean target directories
 
 .PHONY: push-docker-image
 push-docker-image: ## push the docker image to the registry (DOCKER_USER and DOCKER_PASS mandatory)
-	docker login -u $(DOCKER_USER) -p $(DOCKER_PASS) &&\
+	@docker login -u $(DOCKER_USER) -p $(DOCKER_PASS) &&\
 	docker push codacy/git-version:${VERSION}
 
 .PHONY: push-latest-docker-image
 push-latest-docker-image: ## push the docker image with the "latest" tag to the registry (DOCKER_USER and DOCKER_PASS mandatory)
-	docker login -u $(DOCKER_USER) -p $(DOCKER_PASS) &&\
+	@docker login -u $(DOCKER_USER) -p $(DOCKER_PASS) &&\
 	docker tag codacy/git-version:${VERSION} codacy/git-version:latest &&\
 	docker push codacy/git-version:latest
 
