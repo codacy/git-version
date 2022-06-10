@@ -30,7 +30,15 @@ jobs:
           fetch-depth: 0                # fetch the whole repo history
 
       - name: Git Version
-        uses: codacy/git-version@2.5.4
+        id: version
+        uses: codacy/git-version@2.7.1
+      
+      - name: Use the version
+        run: |
+          echo ${{ steps.version.outputs.version }}
+      - name: Use the previous version
+        run: |
+          echo ${{ steps.version.outputs.previous-version }}
 ```
 
 ### Mono-Repo
