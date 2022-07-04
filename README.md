@@ -24,13 +24,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}   # checkout the correct branch name
           fetch-depth: 0                # fetch the whole repo history
 
       - name: Git Version
-        uses: codacy/git-version@2.2.0
+        uses: codacy/git-version@2.5.4
 ```
 
 ### Mono-Repo
@@ -80,13 +80,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}   # checkout the correct branch name
           fetch-depth: 0                # fetch the whole repo history
 
       - name: Git Version
-        uses: codacy/git-version@2.2.0
+        uses: codacy/git-version@2.5.4
         with:
           prefix: module1-
           log-path: module1/
@@ -113,13 +113,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}   # checkout the correct branch name
           fetch-depth: 0                # fetch the whole repo history
 
       - name: Git Version
-        uses: codacy/git-version@2.2.0
+        uses: codacy/git-version@2.5.4
         with:
           prefix: module2-
           log-path: module2/
