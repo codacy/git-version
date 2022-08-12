@@ -1,4 +1,4 @@
-name: Git Version
+name: CodesExe
 author: "Codacy"
 description: 'Semver versioning based on the git history and commit messages of your repository.'
 branding:
