@@ -71,7 +71,8 @@ runs:
             --dev-branch "${{ inputs.dev-branch }}" \
             --minor-identifier="${{ inputs.minor-identifier }}" \
             --major-identifier="${{ inputs.major-identifier }}" \
-            --version-prefix "${{ inputs.prefix }}")
+            --log-paths="${{ inputs.log-paths }}" \
+            --version-prefix "${{ inputs.prefix }}")         
 
         echo "::set-output name=version::$VERSION"
         echo "New Version: $VERSION"
