@@ -57,7 +57,7 @@ runs:
             --major-identifier="${{ inputs.major-identifier }}" \
             --version-prefix "${{ inputs.prefix }}")
 
-        echo "::set-output name=previous-version::$PREVIOUS_VERSION"
+        echo "previous-version=$PREVIOUS_VERSION" >> $GITHUB_OUTPUT
         echo "Previous Version: $PREVIOUS_VERSION"
     - id: version
       shell: bash
@@ -73,5 +73,5 @@ runs:
             --major-identifier="${{ inputs.major-identifier }}" \
             --version-prefix "${{ inputs.prefix }}")
 
-        echo "::set-output name=version::$VERSION"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "New Version: $VERSION"
