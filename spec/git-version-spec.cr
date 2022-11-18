@@ -359,7 +359,7 @@ describe GitVersion do
     end
   end
 
-  it "when in master should not consider pre-release versions for major bumps" do
+  it "when in master should not consider pre-release versions  major bumps" do
     tmp = InTmp.new
 
     begin
@@ -387,7 +387,7 @@ describe GitVersion do
     end
   end
 
-  it "when in master should not consider pre-release versions for minor bumps" do
+  it "when in master should not consider pre-release versions  minor bumps" do
     tmp = InTmp.new
 
     begin
@@ -733,6 +733,24 @@ describe GitVersion do
       version = git.get_new_version
       hash = git.current_commit_hash
       version.should eq("dir2-2.0.0-SNAPSHOT.1.#{hash}")
+    ensure
+      tmp.cleanup
+    end
+  end
+  it "should truncate long branch names in tags" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b very-very-very-very-long-branch-name-that-excedes-k8s-limits)
+      tmp.exec %(git commit -m "commit" --allow-empty)
+      tmp.exec %(git tag "100.100.100")
+
+      version = git.get_new_version
+      hash = git.current_commit_hash
+      version.should eq("100.100.101-veryveryveryverylongbranchname.0.#{hash}")
     ensure
       tmp.cleanup
     end
