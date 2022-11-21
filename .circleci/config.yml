@@ -46,8 +46,10 @@ jobs:
       - attach_workspace:
           at: ~/workdir
       - run:
-          name: Compile
-          command: make clean buildStatic
+          name: Build Docker and extract from image
+          command: |
+            make docker_build
+            docker run --entrypoint cat codacy/git-version:$(cat .version) /bin/git-version > bin/git-version
       - persist_to_workspace:
           root: ~/workdir
           paths:
@@ -87,13 +89,13 @@ workflows:
       - build_docker:
           requires:
             - compile
-      # - manual_approval:
-      #     type: approval
-      #     requires:
-      #       - build_docker
-      - publish_versioned:
+      - manual_approval:
+          type: approval
           requires:
             - build_docker
+      - publish_versioned:
+          requires:
+            - manual_approval
           context: CodacyDocker
       - codacy/tag_version:
           context: CodacyAWS
