@@ -203,7 +203,7 @@ module GitVersion
             nil
           )
       else
-        branch_sanitized_name = cb.downcase.gsub(/[^a-zA-Z0-9]/, "")
+        branch_sanitized_name = cb.downcase.gsub(/[^a-zA-Z0-9]/, "")[0,30]
         prerelease = [branch_sanitized_name, commits_distance(previous_tag), current_commit_hash()] of String | Int32
         previous_version =
           SemanticVersion.new(

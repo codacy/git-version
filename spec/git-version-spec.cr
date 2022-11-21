@@ -737,6 +737,24 @@ describe GitVersion do
       tmp.cleanup
     end
   end
+  it "should truncate long branch names in tags" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b very-very-very-very-long-branch-name-that-excedes-k8s-limits)
+      tmp.exec %(git commit -m "commit" --allow-empty)
+      tmp.exec %(git tag "100.100.100")
+
+      version = git.get_new_version
+      hash = git.current_commit_hash
+      version.should eq("100.100.101-veryveryveryverylongbranchname.0.#{hash}")
+    ensure
+      tmp.cleanup
+    end
+  end
 end
 
 it "get previous version - first commit" do
