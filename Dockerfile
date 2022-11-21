@@ -15,7 +15,7 @@ FROM alpine:3.15
 
 LABEL maintainer="team@codacy.com"
 
-RUN apk add --update --no-cache git
+RUN apk add --update --no-cache git jq
 
 COPY --from=builder /workspace/bin/git-version /bin
 
