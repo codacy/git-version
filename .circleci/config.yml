@@ -130,7 +130,3 @@ workflows:
           requires:
             - publish_versioned
           context: CodacyDocker
-      - codacy/tag_version:
-          context: CodacyAWS
-          requires:
-            - publish_versioned
