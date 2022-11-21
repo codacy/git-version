@@ -42,13 +42,18 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - shell: bash
+      run: |
+        set -eo pipefail
+
+        download_url=$(curl https://api.github.com/repos/codacy/git-version/releases/latest | jq -r .assets[0].browser_download_url)
+        curl -Ls $download_url > bin/git-version
     - id: previous-version
       shell: bash
       run: |
         set -eo pipefail
 
-        export PREVIOUS_VERSION=$(docker run -v $(pwd):/repo codacy/git-version:${{ inputs.tool-version }} \
-          /bin/git-version \
+        export PREVIOUS_VERSION=$(bin/git-version \
             --previous-version \
             --folder /repo \
             --release-branch "${{ inputs.release-branch }}" \
@@ -64,8 +69,7 @@ runs:
       run: |
         set -eo pipefail
 
-        export VERSION=$(docker run -v $(pwd):/repo codacy/git-version:${{ inputs.tool-version }} \
-          /bin/git-version \
+        export VERSION=$(bin/git-version \
             --folder /repo \
             --release-branch "${{ inputs.release-branch }}" \
             --dev-branch "${{ inputs.dev-branch }}" \
