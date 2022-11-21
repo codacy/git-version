@@ -45,7 +45,7 @@ runs:
     - id: previous-version
       shell: bash
       run: |
-        set -e
+        set -eo pipefail
 
         export PREVIOUS_VERSION=$(docker run -v $(pwd):/repo codacy/git-version:${{ inputs.tool-version }} \
           /bin/git-version \
@@ -62,7 +62,7 @@ runs:
     - id: version
       shell: bash
       run: |
-        set -e
+        set -eo pipefail
 
         export VERSION=$(docker run -v $(pwd):/repo codacy/git-version:${{ inputs.tool-version }} \
           /bin/git-version \
