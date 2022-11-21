@@ -23,9 +23,6 @@ buildStatic: ## compiles from crystal sources into static binary
 	mkdir -p bin
 	crystal build $(CRYSTAL_FLAGS) $(CRYSTAL_STATIC_FLAGS) src/main.cr -o bin/git-version
 
-.PHONY: docker
-docker: buildStatic docker_build ## compiles from sources and produce the docker image
-
 docker_build: ## build the docker image
 	docker build -t codacy/git-version:${VERSION} .
 

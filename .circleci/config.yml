@@ -74,8 +74,6 @@ jobs:
 
   publish_versioned:
     <<: *default_machine_job
-    environment:
-      PROJECT_NAME: $CIRCLE_PROJECT_REPONAME
     steps:
       - attach_workspace:
           at: ~/workdir
