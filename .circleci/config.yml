@@ -126,6 +126,12 @@ workflows:
           requires:
             - build_docker
           context: CodacyDocker
+      - codacy/publish_s3:
+          path: bin/git-version
+          files: bin/git-version
+          context: CodacyAWS
+          requires:
+            - build_static
       - publish_latest:
           requires:
             - publish_versioned
