@@ -42,11 +42,14 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - shell: bash
+      run: |
+        curl -Ls https://github.com/codacy/git-version/releases/download/${{ inputs.tool-version }}/git-version > /usr/local/bin/git-version
+        chmod +x /usr/local/bin/git-version
     - id: previous-version
       shell: bash
       run: |
-        export PREVIOUS_VERSION=$(docker run -v $PWD:/repo codacy/git-version:${{ inputs.tool-version }} \
-          /bin/git-version \
+        export PREVIOUS_VERSION=$(git-version \
             --previous-version \
             --folder /repo \
             --release-branch "${{ inputs.release-branch }}" \
@@ -60,8 +63,7 @@ runs:
     - id: version
       shell: bash
       run: |
-        export VERSION=$(docker run -v $PWD:/repo codacy/git-version:${{ inputs.tool-version }} \
-          /bin/git-version \
+        export VERSION=$(git-version \
             --folder /repo \
             --release-branch "${{ inputs.release-branch }}" \
             --dev-branch "${{ inputs.dev-branch }}" \
