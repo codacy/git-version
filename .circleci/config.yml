@@ -111,13 +111,13 @@ workflows:
       - build_docker:
           requires:
             - compile
-      - manual_approval:
-          type: approval
-          requires:
-            - build_docker
+      # - manual_approval:
+      #     type: approval
+      #     requires:
+      #       - build_docker
       - publish_versioned:
           requires:
-            - manual_approval
+            - build_docker
           context: CodacyDocker
       - codacy/tag_version:
           context: CodacyAWS
