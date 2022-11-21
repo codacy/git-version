@@ -19,7 +19,7 @@ RUN apk add --update --no-cache git
 
 COPY --from=builder /workspace/bin/git-version /bin
 
-RUN mkdir -p /repo
+RUN mkdir -p /repo && git config --global --add safe.directory /repo
 VOLUME /repo
 
 CMD ["/bin/git-version", "--folder=/repo"]
