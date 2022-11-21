@@ -21,8 +21,9 @@ jobs:
             curl -fsSL https://crystal-lang.org/install.sh | sudo bash
             sudo apt-get update
             sudo apt-get install crystal
-            sudo make clean test build
+            make clean test build
             ./bin/git-version > .version
+            cat .version
       - persist_to_workspace:
           root: ~/workdir
           paths:
