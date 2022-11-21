@@ -9,14 +9,6 @@ references:
     machine: true
     working_directory: ~/workdir
 
-  set_version_env_variable: &set_version_env_variable
-    run:
-      name: Define Environment Variable VERSION and ENV at Runtime
-      command: |
-        echo export VERSION=$(cat .version) >> $BASH_ENV
-        source $BASH_ENV
-        echo $VERSION
-
 jobs:
   compile:
     <<: *default_machine_job
@@ -43,25 +35,15 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/workdir
-      - *set_version_env_variable
       - run:
           name: Build Docker image
           command: make docker_build
-      - run:
-          name: Save docker to file
-          command: |
-            docker save --output docker-image.tar codacy/git-version:$VERSION
-      - persist_to_workspace:
-          root: ~/workdir
-          paths:
-            - docker-image.tar
 
   build_static:
     <<: *default_machine_job
     steps:
       - attach_workspace:
           at: ~/workdir
-      - *set_version_env_variable
       - run:
           name: Compile
           command: make clean buildStatic
@@ -78,9 +60,6 @@ jobs:
       - attach_workspace:
           at: ~/workdir
       - run:
-          name: Load docker from file
-          command: docker load --input docker-image.tar
-      - run:
           name: Publish images to Docker Hub
           command: make push-docker-image
 
@@ -89,10 +68,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/workdir
-      - *set_version_env_variable
-      - run:
-          name: Load docker from file
-          command: docker load --input docker-image.tar
       - run:
           name: Publish latest image to Docker Hub
           command: make push-latest-docker-image
