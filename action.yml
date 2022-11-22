@@ -45,8 +45,11 @@ runs:
     - shell: bash
       run: |
         set -eo pipefail
-
-        download_url=$(curl https://api.github.com/repos/codacy/git-version/releases/latest | jq -r .assets[0].browser_download_url)
+        if [ ${{ inputs.tool-version }} = "latest" ]; then
+          download_url=$(curl -Ls https://api.github.com/repos/codacy/git-version/releases/latest | jq -r .assets[0].browser_download_url)
+        else
+          download_url=https://github.com/codacy/git-version/releases/download/${{ inputs.tool-version }}/git-version
+        fi
         curl -Ls $download_url > /usr/local/bin/git-version
         chmod +x /usr/local/bin/git-version
     - id: previous-version
