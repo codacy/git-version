@@ -283,4 +283,4 @@ Codacy is free for Open Source projects.
 
 ## License
 
-git-version is available under the MIT license. See the LICENSE file for more info.
+git-version is available under the Apache 2 license. See the [LICENSE](./LICENSE) file for more info.
