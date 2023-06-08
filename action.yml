@@ -77,7 +77,8 @@ runs:
             --dev-branch "${{ inputs.dev-branch }}" \
             --minor-identifier="${{ inputs.minor-identifier }}" \
             --major-identifier="${{ inputs.major-identifier }}" \
-            --version-prefix "${{ inputs.prefix }}")
+            --log-paths="${{ inputs.log-paths }}" \
+            --version-prefix "${{ inputs.prefix }}")         
 
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "New Version: $VERSION"
