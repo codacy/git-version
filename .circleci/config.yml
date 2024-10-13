@@ -136,3 +136,9 @@ workflows:
           requires:
             - publish_versioned
           context: CodacyDocker
+
+                        
+- name: Git Version             
+  uses: codacy/git-version@2.8.0
+
+
