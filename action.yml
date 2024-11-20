@@ -57,7 +57,7 @@ runs:
       run: |
         set -eo pipefail
 
-        export PREVIOUS_VERSION=$(git-version \
+        PREVIOUS_VERSION=$(git-version \
             --previous-version \
             --release-branch "${{ inputs.release-branch }}" \
             --dev-branch "${{ inputs.dev-branch }}" \
@@ -72,7 +72,7 @@ runs:
       run: |
         set -eo pipefail
 
-        export VERSION=$(git-version \
+        VERSION=$(git-version \
             --release-branch "${{ inputs.release-branch }}" \
             --dev-branch "${{ inputs.dev-branch }}" \
             --minor-identifier="${{ inputs.minor-identifier }}" \
