@@ -10,6 +10,7 @@ release_branch = "master"
 minor_identifier = "feature:"
 major_identifier = "breaking:"
 prefix = ""
+suffix = ""
 log_paths = ""
 
 folder = FileUtils.pwd

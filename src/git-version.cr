@@ -126,7 +126,7 @@ module GitVersion
       return {previous_tag, previous_version}
     end
 
-    def get_previous_version: String
+    def get_previous_version : String
       lt, lv = get_previous_tag_and_version
       return lt ? lt : add_prefix_suffix(lv.to_s)
     end
