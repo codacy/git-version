@@ -1,46 +1,46 @@
 name: Git Version
 author: "Codacy"
-description: "Semver versioning based on the git history and commit messages of your repository."
+description: 'Semver versioning based on the git history and commit messages of your repository.'
 branding:
-  icon: "git-branch"
-  color: "gray-dark"
+  icon: 'git-branch'
+  color: 'gray-dark'
 inputs:
   tool-version:
-    description: "The version of the tool to be ran"
+    description: 'The version of the tool to be ran'
     required: true
     default: latest
   release-branch:
-    description: "The name of the release branch"
+    description: 'The name of the release branch'
     required: true
     default: master
   dev-branch:
-    description: "The name of the dev branch"
+    description: 'The name of the dev branch'
     required: true
     default: dev
   minor-identifier:
-    description: "The string or regex to identify a minor release commit"
+    description: 'The string or regex to identify a minor release commit'
     required: true
-    default: "feature:"
+    default: 'feature:'
   major-identifier:
-    description: "The string or regex to identify a major release commit"
+    description: 'The string or regex to identify a major release commit'
     required: true
-    default: "breaking:"
+    default: 'breaking:'
   prefix:
-    description: "The prefix to use in the version"
+    description: 'The prefix to use in the version'
     required: false
   suffix:
-    description: "The suffix to use in the version"
+    description: 'The suffix to use in the version'
     required: false
   log-paths:
-    description: "The paths to be used to calculate changes (comma-separated)"
+    description: 'The paths to be used to calculate changes (comma-separated)'
     required: false
     default: ./
 outputs:
   version:
-    description: "The value of the new pre-calculated tag"
+    description: 'The value of the new pre-calculated tag'
     value: ${{ steps.version.outputs.version }}
   previous-version:
-    description: "Contains the value of previous tag, before calculating a new one"
+    description: 'Contains the value of previous tag, before calculating a new one'
     value: ${{ steps.previous-version.outputs.previous-version }}
 runs:
   using: "composite"
