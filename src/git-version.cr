@@ -12,7 +12,7 @@ module GitVersion
 
   class Git
     def initialize(@dev_branch : String, @release_branch : String, @minor_identifier : String, @major_identifier : String,
-                   @folder = FileUtils.pwd, @prefix : String = "", @log_paths : String = "")
+                   @folder = FileUtils.pwd, @prefix : String = "", @log_paths : String = "", @suffix : String = "")
       @major_id_is_regex = false
       @minor_id_is_regex = false
       if match = /\/(.*)\//.match(@major_identifier)
@@ -26,12 +26,12 @@ module GitVersion
       #
     end
 
-    private def add_prefix(version : String) : String
-      return "#{@prefix}#{version}"
+    private def add_prefix_suffix(version : String) : String
+      return "#{@prefix}#{version}#{@suffix}"
     end
 
-    private def strip_prefix(version : String) : String | Nil
-      version.lchop?(@prefix)
+    private def strip_prefix_suffix(version : String) : String | Nil
+      version.lchop?(@prefix).try &.rchop?(@suffix)
     end
 
     private def exec(cmd)
@@ -98,7 +98,7 @@ module GitVersion
       return [] of String
     end
 
-    def get_previous_tag_and_version: Tuple(String | Nil, SemanticVersion)
+    def get_previous_tag_and_version : Tuple(String | Nil, SemanticVersion)
       cb = current_branch_or_tag
 
       branch_tags = tags_by_branch(cb)
@@ -108,11 +108,11 @@ module GitVersion
 
       branch_tags.each do |tag|
         begin
-          tag_without_prefix = strip_prefix(tag)
-          if tag_without_prefix.nil?
+          tag_without_prefix_suffix = strip_prefix_suffix(tag)
+          if tag_without_prefix_suffix.nil?
             next
           end
-          current_version = SemanticVersion.parse(tag_without_prefix)
+          current_version = SemanticVersion.parse(tag_without_prefix_suffix)
           if !current_version.prerelease.identifiers.empty?
             next
           elsif (previous_version < current_version)
@@ -128,7 +128,7 @@ module GitVersion
 
     def get_previous_version: String
       lt, lv = get_previous_tag_and_version
-      return lt ? lt : add_prefix(lv.to_s)
+      return lt ? lt : add_prefix_suffix(lv.to_s)
     end
 
     def get_new_version
@@ -214,7 +214,7 @@ module GitVersion
           )
       end
 
-      return add_prefix(previous_version.to_s)
+      return add_prefix_suffix(previous_version.to_s)
     end
   end
 end
