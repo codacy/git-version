@@ -19,7 +19,8 @@ describe GitVersion do
 
       version = git.get_new_version
 
-      version.should eq("1.0.1")
+      # no commit since latest tag, expect no version bump
+      version.should eq("1.0.0")
 
       tmp.exec %(git checkout -b dev)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
@@ -132,7 +133,8 @@ describe GitVersion do
 
       version = git.get_new_version
 
-      version.should eq("1.0.1")
+      # no new commit in master, expect no version bump
+      version.should eq("1.0.0")
 
       tmp.exec %(git merge my-fancy.branch)
 
@@ -148,7 +150,8 @@ describe GitVersion do
 
       version = git.get_new_version
 
-      version.should eq("2.0.1")
+      # no new commit in master, expect no version bump
+      version.should eq("2.0.0")
 
       tmp.exec %(git merge --ff-only my-fancy.branch2)
 
@@ -164,7 +167,8 @@ describe GitVersion do
 
       version = git.get_new_version
 
-      version.should eq("3.0.1")
+      # no new commit in master, expect no version bump
+      version.should eq("3.0.0")
 
       tmp.exec %(git merge --no-gpg-sign --no-ff my-fancy.branch3)
 
@@ -737,6 +741,44 @@ describe GitVersion do
       tmp.cleanup
     end
   end
+
+  it "should not bump version if no commit matches log-path filter" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "dir1-", "dir1/")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+
+      # Create dir1 and tag dir1-1.0.0
+      base_dir = "dir1"
+      tmp.exec %(mkdir #{base_dir} && touch #{base_dir}/dummy_file)
+      tmp.exec %(git add #{base_dir}/)
+      tmp.exec %(git commit --no-gpg-sign -m "feature: 1")
+      tmp.exec %(git tag "dir1-1.0.0")
+
+      # Create dir2 and tag dir2-1.0.0
+      base_dir = "dir2"
+      tmp.exec %(mkdir #{base_dir} && touch #{base_dir}/dummy_file)
+      tmp.exec %(git add #{base_dir}/)
+      tmp.exec %(git commit --no-gpg-sign -m "feature: 2")
+      tmp.exec %(git tag "dir2-1.0.0")
+
+      # Commit feature in dir2
+      base_dir = "dir2"
+      tmp.exec %(mkdir -p #{base_dir} && touch #{base_dir}/dummy_file_2)
+      tmp.exec %(git add #{base_dir}/)
+      tmp.exec %(git commit --no-gpg-sign -m "feature: 3")
+
+      # git-version should not bump version for dir1
+      version = git.get_new_version
+      version.should eq("dir1-1.0.0")
+    ensure
+      tmp.cleanup
+    end
+  end
+
   it "should truncate long branch names in tags" do
     tmp = InTmp.new
 
@@ -750,7 +792,13 @@ describe GitVersion do
 
       version = git.get_new_version
       hash = git.current_commit_hash
-      version.should eq("100.100.101-veryveryveryverylongbranchname.0.#{hash}")
+      version.should eq("100.100.100-veryveryveryverylongbranchname.0.#{hash}")
+
+      tmp.exec %(git commit -m "commit" --allow-empty)
+
+      version = git.get_new_version
+      hash = git.current_commit_hash
+      version.should eq("100.100.101-veryveryveryverylongbranchname.1.#{hash}")
     ensure
       tmp.cleanup
     end

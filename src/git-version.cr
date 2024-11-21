@@ -138,13 +138,16 @@ module GitVersion
         SemanticVersion.new(
           previous_version.major,
           previous_version.minor,
-          previous_version.patch + 1,
+          previous_version.patch,
           nil,
           nil,
         )
 
       major = false
+      minor = false
+      patch = false
       get_commits_since(previous_tag).each do |c|
+        patch = true
         commit = c.downcase
         match = if @major_id_is_regex
           /#{@major_identifier}/.match(commit)
@@ -152,39 +155,46 @@ module GitVersion
           commit.includes?(@major_identifier)
         end
         if match
-          previous_version =
-            SemanticVersion.new(
-              previous_version.major + 1,
-              0,
-              0,
-              previous_version.prerelease,
-              previous_version.build,
-            )
           major = true
-          break
+        end
+
+        match = if @minor_id_is_regex
+          /#{@minor_identifier}/.match(commit)
+        else
+          commit.includes?(@minor_identifier)
+        end
+        if match
+          minor = true
         end
       end
 
-      if !major
-        get_commits_since(previous_tag).each do |c|
-          commit = c.downcase
-          match = if @minor_id_is_regex
-            /#{@minor_identifier}/.match(commit)
-          else
-            commit.includes?(@minor_identifier)
-          end
-          if match
-            previous_version =
-              SemanticVersion.new(
-                previous_version.major,
-                previous_version.minor + 1,
-                0,
-                previous_version.prerelease,
-                previous_version.build,
-              )
-            break
-          end
-        end
+      if major
+        previous_version =
+          SemanticVersion.new(
+            previous_version.major + 1,
+            0,
+            0,
+            previous_version.prerelease,
+            previous_version.build,
+          )
+      elsif minor
+        previous_version =
+          SemanticVersion.new(
+            previous_version.major,
+            previous_version.minor + 1,
+            0,
+            previous_version.prerelease,
+            previous_version.build,
+          )
+      elsif patch
+        previous_version =
+          SemanticVersion.new(
+            previous_version.major,
+            previous_version.minor,
+            previous_version.patch + 1,
+            previous_version.prerelease,
+            previous_version.build,
+          )
       end
 
       cb = current_branch_or_tag
