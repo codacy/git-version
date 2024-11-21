@@ -7,6 +7,7 @@ require "./git-version"
 previous_version = false
 dev_branch = "dev"
 release_branch = "master"
+skip_prerelease = false
 minor_identifier = "feature:"
 major_identifier = "breaking:"
 prefix = ""
@@ -19,6 +20,7 @@ OptionParser.parse do |parser|
   parser.on("-f FOLDER", "--folder=FOLDER", "Execute the command in the defined folder") { |f| folder = f }
   parser.on("-b BRANCH", "--dev-branch=BRANCH", "Specifies the development branch") { |branch| dev_branch = branch }
   parser.on("-r BRANCH", "--release-branch=BRANCH", "Specifies the release branch") { |branch| release_branch = branch }
+  parser.on("--skip-prerelease", "Skip the prerelase part of the version") { skip_prerelease=true }
   parser.on("--minor-identifier=IDENTIFIER",
     "Specifies the string or regex to identify a minor release commit with") { |identifier| minor_identifier = identifier }
   parser.on("--major-identifier=IDENTIFIER",
@@ -34,7 +36,7 @@ OptionParser.parse do |parser|
   end
 end
 
-git = GitVersion::Git.new(dev_branch, release_branch, minor_identifier, major_identifier, folder, prefix, log_paths)
+git = GitVersion::Git.new(dev_branch, release_branch, minor_identifier, major_identifier, folder, prefix, log_paths, skip_prerelease)
 
 if previous_version
   puts "#{git.get_previous_version}"
