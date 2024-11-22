@@ -18,7 +18,7 @@ inputs:
     required: true
     default: dev
   skip-prerelease:
-    description: "Avoid prerelease part of the version. When true, release-branch and dev-branch are ignored"
+    description: "Skip prerelease part of the version. When true, release-branch and dev-branch are effectively ignored"
     required: true
     default: "false"
   minor-identifier:
