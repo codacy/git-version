@@ -27,8 +27,6 @@ describe GitVersion do
 
       tag_on_master.should eq(["1.0.0"])
 
-      current_branch = git.current_branch_or_tag
-
       hash = git.current_commit_hash
       hashWithoutPrefix = git.current_commit_hash_without_prefix
 
