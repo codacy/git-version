@@ -78,6 +78,11 @@ module GitVersion
       return "sha" + sha
     end
 
+    def current_commit_hash_without_prefix : String
+      cmd = "git rev-parse --verify HEAD --short"
+      return (exec cmd)[0].rjust(7, '0')
+    end
+
     def commits_distance(tag : String | Nil)
       if tag.nil?
         return (exec "git rev-list --count HEAD")[0]
@@ -99,7 +104,7 @@ module GitVersion
       return [] of String
     end
 
-    def get_previous_tag_and_version: Tuple(String | Nil, SemanticVersion)
+    def get_previous_tag_and_version : Tuple(String | Nil, SemanticVersion)
       cb = current_branch_or_tag
 
       branch_tags = tags_by_branch(cb)
@@ -127,7 +132,7 @@ module GitVersion
       return {previous_tag, previous_version}
     end
 
-    def get_previous_version: String
+    def get_previous_version : String
       lt, lv = get_previous_tag_and_version
       return lt ? lt : add_prefix(lv.to_s)
     end
