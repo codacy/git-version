@@ -80,7 +80,7 @@ module GitVersion
 
     def current_commit_hash_without_prefix : String
       cmd = "git rev-parse --verify HEAD --short"
-      sha = (exec cmd)[0].strip
+      return (exec cmd)[0].strip
     end
 
     def commits_distance(tag : String | Nil)
