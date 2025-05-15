@@ -30,7 +30,7 @@ describe GitVersion do
       hash = git.current_commit_hash
       hashWithoutPrefix = git.current_commit_hash_without_prefix
 
-      hash.should eq("sha#{hashWithoutPrefix}")
+      hash.should eq("sha.#{hashWithoutPrefix}")
     end
   end
   it "should get the correct version in master and dev branch" do
