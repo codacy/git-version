@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@9.3.1
+  codacy: codacy/base@12.2.0
 
 # Re-usable blocks to reduce boilerplate in job definitions.
 references:
