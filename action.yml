@@ -17,6 +17,10 @@ inputs:
     description: 'The name of the dev branch'
     required: true
     default: dev
+  skip-prerelease:
+    description: "Skip prerelease part of the version. When true, release-branch and dev-branch are effectively ignored"
+    required: true
+    default: "false"
   minor-identifier:
     description: 'The string or regex to identify a minor release commit'
     required: true
@@ -61,6 +65,7 @@ runs:
             --previous-version \
             --release-branch "${{ inputs.release-branch }}" \
             --dev-branch "${{ inputs.dev-branch }}" \
+            ${{ inputs.skip-prerelease == 'true' && '--skip-prerelease' || '' }} \
             --minor-identifier="${{ inputs.minor-identifier }}" \
             --major-identifier="${{ inputs.major-identifier }}" \
             --version-prefix "${{ inputs.prefix }}")
@@ -75,6 +80,8 @@ runs:
         export VERSION=$(git-version \
             --release-branch "${{ inputs.release-branch }}" \
             --dev-branch "${{ inputs.dev-branch }}" \
+            ${{ inputs.skip-prerelease == 'true' && '--skip-prerelease' || '' }} \
+            --skip-prerelease "${{ inputs.skip-prerelease }}" \
             --minor-identifier="${{ inputs.minor-identifier }}" \
             --major-identifier="${{ inputs.major-identifier }}" \
             --version-prefix "${{ inputs.prefix }}")
