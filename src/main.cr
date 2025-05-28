@@ -10,6 +10,7 @@ release_branch = "master"
 minor_identifier = "feature:"
 major_identifier = "breaking:"
 prefix = ""
+suffix = ""
 log_paths = ""
 
 folder = FileUtils.pwd
@@ -24,6 +25,7 @@ OptionParser.parse do |parser|
   parser.on("--major-identifier=IDENTIFIER",
     "Specifies the string or regex to identify a major release commit with") { |identifier| major_identifier = identifier }
   parser.on("-p PREFIX", "--version-prefix=PREFIX", "Specifies a version prefix") { |p| prefix = p }
+  parser.on("-s SUFFIX", "--version-suffix=SUFFIX", "Specifies a version suffix") { |s| suffix = s }
   parser.on("-l PATH", "--log-paths=PATH", "") { |path| log_paths = path }
   parser.on("--previous-version", "Returns the previous tag instead of calculating a new one") { previous_version=true }
   parser.on("-h", "--help", "Show this help") { puts parser }
@@ -34,7 +36,7 @@ OptionParser.parse do |parser|
   end
 end
 
-git = GitVersion::Git.new(dev_branch, release_branch, minor_identifier, major_identifier, folder, prefix, log_paths)
+git = GitVersion::Git.new(dev_branch, release_branch, minor_identifier, major_identifier, folder, prefix, log_paths, suffix)
 
 if previous_version
   puts "#{git.get_previous_version}"

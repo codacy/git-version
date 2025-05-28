@@ -574,6 +574,120 @@ describe GitVersion do
     end
   end
 
+  it "should properly manage suffixes" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "", "", "-backend")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "feature: 1")
+      tmp.exec %(git tag "1.1.0-backend")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
+
+      version = git.get_new_version
+      version.should eq("1.1.1-backend")
+    ensure
+      tmp.cleanup
+    end
+  end
+
+  it "non-suffixed tags should be ignored if suffix is enabled" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "", "", "-backend")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+      tmp.exec %(git tag "1.0.0")
+
+      version = git.get_new_version
+      version.should eq("0.0.1-backend")
+    ensure
+      tmp.cleanup
+    end
+  end
+
+  it "should properly manage a tag with only suffix" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "", "", "-backend")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+      tmp.exec %(git tag "-backend")
+
+      version = git.get_new_version
+      version.should eq("0.0.1-backend")
+    ensure
+      tmp.cleanup
+    end
+  end
+
+  it "should properly manage combination of prefixes and suffixes" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "v", "", "-backend")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "feature: 1")
+      tmp.exec %(git tag "v1.1.0-backend")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
+
+      version = git.get_new_version
+      version.should eq("v1.1.1-backend")
+    ensure
+      tmp.cleanup
+    end
+  end
+
+  it "non-prefixed or suffixed tags should be ignored if prefix and suffix are enabled" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "v", "", "-backend")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+      tmp.exec %(git tag "1.0.0")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+      tmp.exec %(git tag "v1.0.0")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+      tmp.exec %(git tag "1.0.0-backend")
+
+      version = git.get_new_version
+      version.should eq("v0.0.1-backend")
+    ensure
+      tmp.cleanup
+    end
+  end
+
+  it "should properly manage a tag with only prefix and suffix" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "v", "", "-backend")
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b master)
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+      tmp.exec %(git tag "v-backend")
+
+      version = git.get_new_version
+      version.should eq("v0.0.1-backend")
+    ensure
+      tmp.cleanup
+    end
+  end
+
   it "should count the commits distance" do
     tmp = InTmp.new
 

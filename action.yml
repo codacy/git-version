@@ -28,6 +28,9 @@ inputs:
   prefix:
     description: 'The prefix to use in the version'
     required: false
+  suffix:
+    description: 'The suffix to use in the version'
+    required: false
   log-paths:
     description: 'The paths to be used to calculate changes (comma-separated)'
     required: false
@@ -63,7 +66,8 @@ runs:
             --dev-branch "${{ inputs.dev-branch }}" \
             --minor-identifier="${{ inputs.minor-identifier }}" \
             --major-identifier="${{ inputs.major-identifier }}" \
-            --version-prefix "${{ inputs.prefix }}")
+            --version-prefix "${{ inputs.prefix }}" \
+            --version-suffix "${{ inputs.suffix }}")
 
         echo "previous-version=$PREVIOUS_VERSION" >> $GITHUB_OUTPUT
         echo "Previous Version: $PREVIOUS_VERSION"
@@ -77,7 +81,8 @@ runs:
             --dev-branch "${{ inputs.dev-branch }}" \
             --minor-identifier="${{ inputs.minor-identifier }}" \
             --major-identifier="${{ inputs.major-identifier }}" \
-            --version-prefix "${{ inputs.prefix }}")
+            --version-prefix "${{ inputs.prefix }}" \
+            --version-suffix "${{ inputs.suffix }}")
 
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "New Version: $VERSION"
