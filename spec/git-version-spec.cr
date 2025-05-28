@@ -6,6 +6,33 @@ require "../src/git-version"
 
 include Utils
 describe GitVersion do
+  it "should match hash with hash without prefix" do
+    tmp = InTmp.new
+    begin
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b #{git.release_branch})
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+      tmp.exec %(git tag "1.0.0")
+
+      version = git.get_new_version
+
+      version.should eq("1.0.1")
+
+      tmp.exec %(git checkout -b dev)
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
+
+      tag_on_master = git.tags_by_branch("#{git.release_branch}")
+
+      tag_on_master.should eq(["1.0.0"])
+
+      hash = git.current_commit_hash
+      hashWithoutPrefix = git.current_commit_hash_without_prefix
+
+      hash.should eq("sha.#{hashWithoutPrefix}")
+    end
+  end
   it "should get the correct version in master and dev branch" do
     tmp = InTmp.new
 
