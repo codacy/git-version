@@ -98,6 +98,28 @@ describe GitVersion do
     end
   end
 
+    it "should skip prerelease component in the version number when configured" do
+      tmp = InTmp.new
+
+      begin
+        tmp.exec %(git init)
+        tmp.exec %(git checkout -b master)
+        tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+        tmp.exec %(git tag "1.0.0")
+
+        tmp.exec %(git checkout -b my-test.branch)
+        tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
+
+        git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "", "", true)
+
+        version = git.get_new_version
+
+        version.should eq("1.0.1")
+      ensure
+        tmp.cleanup
+      end
+    end
+
   it "should properly bump the version" do
     tmp = InTmp.new
 
