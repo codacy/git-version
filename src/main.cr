@@ -9,6 +9,7 @@ dev_branch = "dev"
 release_branch = "master"
 minor_identifier = "feature:"
 major_identifier = "breaking:"
+skip_prerelease = false
 prefix = ""
 log_paths = ""
 
@@ -23,6 +24,7 @@ OptionParser.parse do |parser|
     "Specifies the string or regex to identify a minor release commit with") { |identifier| minor_identifier = identifier }
   parser.on("--major-identifier=IDENTIFIER",
     "Specifies the string or regex to identify a major release commit with") { |identifier| major_identifier = identifier }
+  parser.on("--skip-prerelease BRANCH", "Skip the prerelase part of the version") { skip_prerelease=true }
   parser.on("-p PREFIX", "--version-prefix=PREFIX", "Specifies a version prefix") { |p| prefix = p }
   parser.on("-l PATH", "--log-paths=PATH", "") { |path| log_paths = path }
   parser.on("--previous-version", "Returns the previous tag instead of calculating a new one") { previous_version=true }
@@ -34,7 +36,7 @@ OptionParser.parse do |parser|
   end
 end
 
-git = GitVersion::Git.new(dev_branch, release_branch, minor_identifier, major_identifier, folder, prefix, log_paths)
+git = GitVersion::Git.new(dev_branch, release_branch, minor_identifier, major_identifier, folder, prefix, log_paths, skip_prerelease)
 
 if previous_version
   puts "#{git.get_previous_version}"
