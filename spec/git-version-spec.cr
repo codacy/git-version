@@ -6,6 +6,33 @@ require "../src/git-version"
 
 include Utils
 describe GitVersion do
+  it "should match hash with hash without prefix" do
+    tmp = InTmp.new
+    begin
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b #{git.release_branch})
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+      tmp.exec %(git tag "1.0.0")
+
+      version = git.get_new_version
+
+      version.should eq("1.0.1")
+
+      tmp.exec %(git checkout -b dev)
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
+
+      tag_on_master = git.tags_by_branch("#{git.release_branch}")
+
+      tag_on_master.should eq(["1.0.0"])
+
+      hash = git.current_commit_hash
+      hashWithoutPrefix = git.current_commit_hash_without_prefix
+
+      hash.should eq("sha.#{hashWithoutPrefix}")
+    end
+  end
   it "should get the correct version in master and dev branch" do
     tmp = InTmp.new
 
@@ -70,6 +97,28 @@ describe GitVersion do
       tmp.cleanup
     end
   end
+
+    it "should skip prerelease component in the version number when configured" do
+      tmp = InTmp.new
+
+      begin
+        tmp.exec %(git init)
+        tmp.exec %(git checkout -b master)
+        tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+        tmp.exec %(git tag "1.0.0")
+
+        tmp.exec %(git checkout -b my-test.branch)
+        tmp.exec %(git commit --no-gpg-sign --allow-empty -m "2")
+
+        git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir, "", "", true)
+
+        version = git.get_new_version
+
+        version.should eq("1.0.1")
+      ensure
+        tmp.cleanup
+      end
+    end
 
   it "should properly bump the version" do
     tmp = InTmp.new
@@ -733,6 +782,24 @@ describe GitVersion do
       version = git.get_new_version
       hash = git.current_commit_hash
       version.should eq("dir2-2.0.0-SNAPSHOT.1.#{hash}")
+    ensure
+      tmp.cleanup
+    end
+  end
+  it "should truncate long branch names in tags" do
+    tmp = InTmp.new
+
+    begin
+      git = GitVersion::Git.new("dev", "master", "feature:", "breaking:", tmp.@tmpdir)
+
+      tmp.exec %(git init)
+      tmp.exec %(git checkout -b very-very-very-very-long-branch-name-that-excedes-k8s-limits)
+      tmp.exec %(git commit -m "commit" --allow-empty)
+      tmp.exec %(git tag "100.100.100")
+
+      version = git.get_new_version
+      hash = git.current_commit_hash
+      version.should eq("100.100.101-veryveryveryverylongbranchname.0.#{hash}")
     ensure
       tmp.cleanup
     end

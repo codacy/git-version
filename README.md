@@ -30,7 +30,15 @@ jobs:
           fetch-depth: 0                # fetch the whole repo history
 
       - name: Git Version
-        uses: codacy/git-version@2.5.4
+        id: version
+        uses: codacy/git-version@2.7.1
+      
+      - name: Use the version
+        run: |
+          echo ${{ steps.version.outputs.version }}
+      - name: Use the previous version
+        run: |
+          echo ${{ steps.version.outputs.previous-version }}
 ```
 
 ### Mono-Repo
@@ -181,6 +189,7 @@ You can configure the action with various inputs, a list of which has been provi
 | dev-branch       | The name of the development branch                                                              | dev           |
 | minor-identifier | The string used to identify a minor release (wrap with '/' to match using a regular expression) | feature:      |
 | major-identifier | The string used to identify a major release (wrap with '/' to match using a regular expression) | breaking:     |
+| skip-prerelease  | When true, release-branch and dev-branch are effectively ignored                                | false         |
 | prefix           | The prefix used for the version name                                                            |               |
 | log-paths        | The paths used to calculate changes (comma-separated)                                           |               |
 
@@ -275,4 +284,4 @@ Codacy is free for Open Source projects.
 
 ## License
 
-git-version is available under the MIT license. See the LICENSE file for more info.
+git-version is available under the Apache 2 license. See the [LICENSE](./LICENSE) file for more info.

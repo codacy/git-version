@@ -1,21 +1,13 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@2.5.0
+  codacy: codacy/base@12.2.0
 
 # Re-usable blocks to reduce boilerplate in job definitions.
 references:
   default_machine_job: &default_machine_job
     machine: true
     working_directory: ~/workdir
-
-  set_version_env_variable: &set_version_env_variable
-    run:
-      name: Define Environment Variable VERSION and ENV at Runtime
-      command: |
-        echo export VERSION=$(cat .version) >> $BASH_ENV
-        source $BASH_ENV
-        echo $VERSION
 
 jobs:
   compile:
@@ -26,12 +18,12 @@ jobs:
       - run:
           name: Get version
           command: |
+            curl -fsSL https://crystal-lang.org/install.sh | sudo bash
             sudo apt-get update
-            sudo apt-get install libevent-core-2.0-5 libevent-dev libevent-extra-2.0-5 libevent-openssl-2.0-5 libevent-pthreads-2.0-5 libgmp-dev libgmpxx4ldbl libssl-dev libxml2-dev libyaml-dev libreadline-dev automake libtool git llvm libpcre3-dev build-essential -y
-            wget https://github.com/crystal-lang/crystal/releases/download/0.30.1/crystal_0.30.1-1_amd64.deb
-            sudo dpkg -i crystal_0.30.1-1_amd64.deb
-            sudo make clean test build
+            sudo apt-get install crystal
+            make clean test build
             ./bin/git-version > .version
+            cat .version
       - persist_to_workspace:
           root: ~/workdir
           paths:
@@ -44,28 +36,20 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/workdir
-      - *set_version_env_variable
       - run:
           name: Build Docker image
           command: make docker_build
-      - run:
-          name: Save docker to file
-          command: |
-            docker save --output docker-image.tar codacy/git-version:$VERSION
-      - persist_to_workspace:
-          root: ~/workdir
-          paths:
-            - docker-image.tar
 
   build_static:
     <<: *default_machine_job
     steps:
       - attach_workspace:
           at: ~/workdir
-      - *set_version_env_variable
       - run:
-          name: Compile
-          command: make clean buildStatic
+          name: Build Docker and extract from image
+          command: |
+            make docker_build
+            docker run --entrypoint cat codacy/git-version:$(cat .version) /bin/git-version > bin/git-version
       - persist_to_workspace:
           root: ~/workdir
           paths:
@@ -75,14 +59,9 @@ jobs:
 
   publish_versioned:
     <<: *default_machine_job
-    environment:
-      PROJECT_NAME: $CIRCLE_PROJECT_REPONAME
     steps:
       - attach_workspace:
           at: ~/workdir
-      - run:
-          name: Load docker from file
-          command: docker load --input docker-image.tar
       - run:
           name: Publish images to Docker Hub
           command: make push-docker-image
@@ -92,10 +71,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/workdir
-      - *set_version_env_variable
-      - run:
-          name: Load docker from file
-          command: docker load --input docker-image.tar
       - run:
           name: Publish latest image to Docker Hub
           command: make push-latest-docker-image
@@ -151,11 +126,13 @@ workflows:
           requires:
             - build_docker
           context: CodacyDocker
+      - codacy/publish_s3:
+          path: bin/git-version
+          files: bin/git-version
+          context: CodacyAWS
+          requires:
+            - build_static
       - publish_latest:
           requires:
             - publish_versioned
           context: CodacyDocker
-      - codacy/tag_version:
-          context: CodacyAWS
-          requires:
-            - publish_versioned

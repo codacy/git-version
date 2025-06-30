@@ -25,6 +25,10 @@ inputs:
     description: 'The string or regex to identify a major release commit'
     required: true
     default: 'breaking:'
+  skip-prerelease:
+    description: 'Skip prerelease part of the version. When true, release-branch and dev-branch are effectively ignored'
+    required: true
+    default: 'false'
   prefix:
     description: 'The prefix to use in the version'
     required: false
@@ -42,37 +46,45 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - shell: bash
+      run: |
+        set -eo pipefail
+        if [ "${{ inputs.tool-version }}" = "latest" ]; then
+          download_url="$(curl -Ls https://api.github.com/repos/codacy/git-version/releases/latest | jq -r .assets[0].browser_download_url)"
+        else
+          download_url="https://github.com/codacy/git-version/releases/download/${{ inputs.tool-version }}/git-version"
+        fi
+        curl -Ls "$download_url" > /usr/local/bin/git-version
+        chmod +x /usr/local/bin/git-version
     - id: previous-version
       shell: bash
       run: |
-        set -e
+        set -eo pipefail
 
-        export PREVIOUS_VERSION=$(docker run -v $(pwd):/repo codacy/git-version:${{ inputs.tool-version }} \
-          /bin/git-version \
+        export PREVIOUS_VERSION=$(git-version \
             --previous-version \
-            --folder /repo \
             --release-branch "${{ inputs.release-branch }}" \
             --dev-branch "${{ inputs.dev-branch }}" \
             --minor-identifier="${{ inputs.minor-identifier }}" \
             --major-identifier="${{ inputs.major-identifier }}" \
+            ${{ inputs.skip-prerelease == 'true' && '--skip-prerelease' || '' }} \
             --version-prefix "${{ inputs.prefix }}")
 
-        echo "::set-output name=previous-version::$PREVIOUS_VERSION"
+        echo "previous-version=$PREVIOUS_VERSION" >> $GITHUB_OUTPUT
         echo "Previous Version: $PREVIOUS_VERSION"
     - id: version
       shell: bash
       run: |
-        set -e
+        set -eo pipefail
 
-        export VERSION=$(docker run -v $(pwd):/repo codacy/git-version:${{ inputs.tool-version }} \
-          /bin/git-version \
-            --folder /repo \
+        export VERSION=$(git-version \
             --release-branch "${{ inputs.release-branch }}" \
             --dev-branch "${{ inputs.dev-branch }}" \
             --minor-identifier="${{ inputs.minor-identifier }}" \
             --major-identifier="${{ inputs.major-identifier }}" \
-            --log-paths="${{ inputs.log-paths }}" \
-            --version-prefix "${{ inputs.prefix }}")         
+            --log-paths="${{ inputs.log-paths }}" \     
+            ${{ inputs.skip-prerelease == 'true' && '--skip-prerelease' || '' }} \
+            --version-prefix "${{ inputs.prefix }}")
 
-        echo "::set-output name=version::$VERSION"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "New Version: $VERSION"

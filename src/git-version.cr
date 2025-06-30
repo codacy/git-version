@@ -12,7 +12,7 @@ module GitVersion
 
   class Git
     def initialize(@dev_branch : String, @release_branch : String, @minor_identifier : String, @major_identifier : String,
-                   @folder = FileUtils.pwd, @prefix : String = "", @log_paths : String = "")
+                   @folder = FileUtils.pwd, @prefix : String = "", @log_paths : String = "", @skip_prerelease : Bool = false)
       @major_id_is_regex = false
       @minor_id_is_regex = false
       if match = /\/(.*)\//.match(@major_identifier)
@@ -74,7 +74,13 @@ module GitVersion
 
     def current_commit_hash : String
       cmd = "git rev-parse --verify HEAD --short"
-      return (exec cmd)[0].rjust(7, '0')
+      sha = (exec cmd)[0].strip
+      return "sha." + sha
+    end
+
+    def current_commit_hash_without_prefix : String
+      cmd = "git rev-parse --verify HEAD --short"
+      return (exec cmd)[0].strip
     end
 
     def commits_distance(tag : String | Nil)
@@ -98,7 +104,7 @@ module GitVersion
       return [] of String
     end
 
-    def get_previous_tag_and_version: Tuple(String | Nil, SemanticVersion)
+    def get_previous_tag_and_version : Tuple(String | Nil, SemanticVersion)
       cb = current_branch_or_tag
 
       branch_tags = tags_by_branch(cb)
@@ -126,7 +132,7 @@ module GitVersion
       return {previous_tag, previous_version}
     end
 
-    def get_previous_version: String
+    def get_previous_version : String
       lt, lv = get_previous_tag_and_version
       return lt ? lt : add_prefix(lv.to_s)
     end
@@ -189,32 +195,36 @@ module GitVersion
 
       cb = current_branch_or_tag
 
-      if cb == @release_branch
-        #
-      elsif cb == @dev_branch
-        prerelease = [DEV_BRANCH_SUFFIX, commits_distance(previous_tag), current_commit_hash()] of String | Int32
-        previous_version =
-          SemanticVersion.new(
-            previous_version.major,
-            previous_version.minor,
-            previous_version.patch,
-            SemanticVersion::Prerelease.new(prerelease),
-            nil
-          )
-      else
-        branch_sanitized_name = cb.downcase.gsub(/[^a-zA-Z0-9]/, "")
-        prerelease = [branch_sanitized_name, commits_distance(previous_tag), current_commit_hash()] of String | Int32
-        previous_version =
-          SemanticVersion.new(
-            previous_version.major,
-            previous_version.minor,
-            previous_version.patch,
-            SemanticVersion::Prerelease.new(prerelease),
-            nil
-          )
-      end
+      if ! @skip_prerelease
+        cb = current_branch_or_tag
 
+        if cb == @release_branch
+          #
+          elsif cb == @dev_branch
+          prerelease = [DEV_BRANCH_SUFFIX, commits_distance(previous_tag), current_commit_hash()] of String | Int32
+          previous_version =
+            SemanticVersion.new(
+              previous_version.major,
+              previous_version.minor,
+              previous_version.patch,
+              SemanticVersion::Prerelease.new(prerelease),
+              nil
+            )
+        else
+          branch_sanitized_name = cb.downcase.gsub(/[^a-zA-Z0-9]/, "")[0,30]
+          prerelease = [branch_sanitized_name, commits_distance(previous_tag), current_commit_hash()] of String | Int32
+          previous_version =
+            SemanticVersion.new(
+              previous_version.major,
+              previous_version.minor,
+              previous_version.patch,
+              SemanticVersion::Prerelease.new(prerelease),
+              nil
+            )
+        end
+      end
       return add_prefix(previous_version.to_s)
     end
+
   end
 end
