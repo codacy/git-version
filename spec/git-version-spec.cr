@@ -474,7 +474,7 @@ describe GitVersion do
       tmp.exec %(git checkout -b master)
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
       tmp.exec %(git tag "0.1.0")
-      tmp.exec %(git commit --no-gpg-sign --allow-empty -m ":breaking: 2")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: 2")
 
       version = git.get_new_version
       version.should eq("1.0.0")
@@ -495,7 +495,7 @@ describe GitVersion do
       tmp.exec %(git tag "0.1.0")
       tmp.exec %(git commit --no-gpg-sign --allow-empty -m "feature: 2")
       tmp.exec %(git tag "0.2.0-asd")
-      tmp.exec %(git commit --no-gpg-sign --allow-empty -m ":breaking: 2")
+      tmp.exec %(git commit --no-gpg-sign --allow-empty -m "breaking: 2")
 
       version = git.get_new_version
       version.should eq("1.0.0")

@@ -153,9 +153,9 @@ module GitVersion
       get_commits_since(previous_tag).each do |c|
         commit = c.downcase
         match = if @major_id_is_regex
-          /#{@major_identifier}/.match(commit)
+          /^#{@major_identifier}/.match(commit)
         else
-          commit.includes?(@major_identifier)
+          /^#{@major_identifier}/.match(commit)
         end
         if match
           previous_version =
