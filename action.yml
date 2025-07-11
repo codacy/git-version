@@ -82,6 +82,7 @@ runs:
             --dev-branch "${{ inputs.dev-branch }}" \
             --minor-identifier="${{ inputs.minor-identifier }}" \
             --major-identifier="${{ inputs.major-identifier }}" \
+            --log-paths="${{ inputs.log-paths }}" \ 
             ${{ inputs.skip-prerelease == 'true' && '--skip-prerelease' || '' }} \
             --version-prefix "${{ inputs.prefix }}")
 
