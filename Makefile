@@ -1,7 +1,6 @@
 CRYSTAL?=$(shell which crystal)
 CRYSTAL_FLAGS=--release
 CRYSTAL_STATIC_FLAGS=--static
-
 VERSION?=$(shell cat .version)
 
 all: fmt test build docker_build ## clean and produce target binary and docker image
