@@ -54,21 +54,21 @@ runs:
         else
           download_url="https://github.com/codacy/git-version/releases/download/${{ inputs.tool-version }}/git-version"
         fi
-        curl -Ls "$download_url" > /usr/local/bin/git-version
-        chmod +x /usr/local/bin/git-version
+        sudo wget "$download_url" -O "${{ inputs.tool-installation-path }}/git-version"
+        sudo chmod +x "${{ inputs.tool-installation-path }}/git-version"
     - id: previous-version
       shell: bash
       run: |
         set -eo pipefail
 
-        export PREVIOUS_VERSION=$(git-version \
+        export PREVIOUS_VERSION=$(${{ inputs.tool-installation-path }}/git-version \
             --previous-version \
             --release-branch "${{ inputs.release-branch }}" \
             --dev-branch "${{ inputs.dev-branch }}" \
             --minor-identifier="${{ inputs.minor-identifier }}" \
             --major-identifier="${{ inputs.major-identifier }}" \
-            ${{ inputs.skip-prerelease == 'true' && '--skip-prerelease' || '' }} \
-            --version-prefix "${{ inputs.prefix }}")
+            --version-prefix "${{ inputs.prefix }}" \
+            ${{ inputs.skip-prerelease == 'true' && '--skip-prerelease' || '' }})
 
         echo "previous-version=$PREVIOUS_VERSION" >> $GITHUB_OUTPUT
         echo "Previous Version: $PREVIOUS_VERSION"
@@ -77,14 +77,14 @@ runs:
       run: |
         set -eo pipefail
 
-        export VERSION=$(git-version \
+        export VERSION=$(${{ inputs.tool-installation-path }}/git-version \
             --release-branch "${{ inputs.release-branch }}" \
             --dev-branch "${{ inputs.dev-branch }}" \
             --minor-identifier="${{ inputs.minor-identifier }}" \
             --major-identifier="${{ inputs.major-identifier }}" \
-            --log-paths="${{ inputs.log-paths }}" \ 
-            ${{ inputs.skip-prerelease == 'true' && '--skip-prerelease' || '' }} \
-            --version-prefix "${{ inputs.prefix }}")
+            --log-paths="${{ inputs.log-paths }}" \
+            --version-prefix "${{ inputs.prefix }}" \
+            ${{ inputs.skip-prerelease == 'true' && '--skip-prerelease' || '' }})
 
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "New Version: $VERSION"
