@@ -40,6 +40,9 @@ outputs:
   version:
     description: 'The value of the new pre-calculated tag'
     value: ${{ steps.version.outputs.version }}
+  non-prefixed-version:
+    description: 'The value of the new pre-calculated tag without the prefix'
+    value: ${{ steps.version.outputs.non-prefixed-version }}
   previous-version:
     description: 'Contains the value of previous tag, before calculating a new one'
     value: ${{ steps.previous-version.outputs.previous-version }}
@@ -85,6 +88,9 @@ runs:
             --log-paths="${{ inputs.log-paths }}" \ 
             ${{ inputs.skip-prerelease == 'true' && '--skip-prerelease' || '' }} \
             --version-prefix "${{ inputs.prefix }}")
-
+        
+        prefix="${{ inputs.prefix }}"
+        non_prefixed_version=${VERSION#"$prefix"}
+        echo "non-prefixed-version=$non_prefixed_version" >> $GITHUB_OUTPUT
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "New Version: $VERSION"
