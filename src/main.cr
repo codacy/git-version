@@ -7,8 +7,9 @@ require "./git-version"
 previous_version = false
 dev_branch = "dev"
 release_branch = "master"
-minor_identifier = "feature:"
-major_identifier = "breaking:"
+# Defaults follow Conventional Commits (also accepting the legacy `feature:` / `breaking:`)
+minor_identifier = "/^(feature|feat)(\\(.+\\))?:/"
+major_identifier = "/breaking[ -]change:|breaking(\\(.+\\))?:|^[a-z]+(\\(.+\\))?!:/"
 skip_prerelease = false
 prefix = ""
 log_paths = ""

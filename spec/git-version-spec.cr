@@ -861,3 +861,34 @@ it "get previous version - pre-tagged" do
     tmp.cleanup
   end
 end
+
+describe "conventional commits (default identifiers)" do
+  minor = "/^(feature|feat)(\\(.+\\))?:/"
+  major = "/breaking[ -]change:|breaking(\\(.+\\))?:|^[a-z]+(\\(.+\\))?!:/"
+
+  {
+    {"fix: bug", "1.0.1"},
+    {"feat: thing", "1.1.0"},
+    {"feat(api): thing", "1.1.0"},
+    {"feature: thing", "1.1.0"},
+    {"feat!: thing", "2.0.0"},
+    {"fix(core)!: thing", "2.0.0"},
+    {"breaking: thing", "2.0.0"},
+    {"fix: thing\n\nBREAKING CHANGE: removed param", "2.0.0"},
+  }.each do |msg, expected|
+    it "#{msg.inspect} -> #{expected}" do
+      tmp = InTmp.new
+      begin
+        git = GitVersion::Git.new("dev", "master", minor, major, tmp.@tmpdir)
+        tmp.exec %(git init)
+        tmp.exec %(git checkout -b master)
+        tmp.exec %(git commit --no-gpg-sign --allow-empty -m "1")
+        tmp.exec %(git tag "1.0.0")
+        tmp.exec %(git commit --no-gpg-sign --allow-empty -m "#{msg}")
+        git.get_new_version.should eq(expected)
+      ensure
+        tmp.cleanup
+      end
+    end
+  end
+end
