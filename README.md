@@ -143,7 +143,7 @@ $ ./git-version
 1.0.0
 ```
 
-Versions are incremented since the last tag. The patch version is incremented by default, unless there is at least one commit since the last tag, containing a minor or major identifier (defaults to `feature:` or `breaking:`) in the message.
+Versions are incremented since the last tag. The patch version is incremented by default, unless there is at least one commit since the last tag, containing a minor or major identifier in the message. By default [Conventional Commits](https://www.conventionalcommits.org) are supported: `feat:`/`feat(scope):` (and legacy `feature:`) bump minor; `breaking:`, `BREAKING CHANGE:` or a `!` after the type (e.g. `fix!:`, `feat(api)!:`) bump major.
 
 On branches other than the master/main and development branch (default to `master` and `dev`) the version is a variation of the latest common tag with the master/main branch, and has the following format:
 
@@ -187,8 +187,8 @@ You can configure the action with various inputs, a list of which has been provi
 | tool-version     | The version of the tool to run                                                                  | latest        |
 | release-branch   | The name of the master/main branch                                                              | master        |
 | dev-branch       | The name of the development branch                                                              | dev           |
-| minor-identifier | The string used to identify a minor release (wrap with '/' to match using a regular expression) | feature:      |
-| major-identifier | The string used to identify a major release (wrap with '/' to match using a regular expression) | breaking:     |
+| minor-identifier | The string used to identify a minor release (wrap with '/' to match using a regular expression) | `/^(feature\|feat)(\(.+\))?:/` |
+| major-identifier | The string used to identify a major release (wrap with '/' to match using a regular expression) | `/breaking[ -]change:\|breaking(\(.+\))?:\|^[a-z]+(\(.+\))?!:/` |
 | skip-prerelease  | When true, release-branch and dev-branch are effectively ignored                                | false         |
 | prefix           | The prefix used for the version name                                                            |               |
 | log-paths        | The paths used to calculate changes (comma-separated)                                           |               |

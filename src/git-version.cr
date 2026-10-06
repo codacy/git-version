@@ -152,7 +152,7 @@ module GitVersion
       major = false
       get_commits_since(previous_tag).each do |c|
         commit = c.downcase
-        match = /^#{@major_identifier}/.match(commit)
+        match = /^(?:#{@major_identifier})/.match(commit)
         if match
           previous_version =
             SemanticVersion.new(
